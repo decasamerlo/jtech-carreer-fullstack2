@@ -1,0 +1,50 @@
+# AGENTS.md
+
+## Repository Structure
+
+Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklist-frontend/` (Vue 3).
+
+## Backend (`jtech-tasklist-backend/`)
+
+- **Stack**: Spring Boot 3.5.5, Java 21, Gradle 8.14, Spring Data JPA + Hibernate
+- **Architecture**: Hexagonal (`application/` → core/domains/ports/usecases, `adapters/` → input/controllers, output/repositories, `config/`)
+- **Main class**: `br.com.jtech.tasklist.StartTasklist`
+- **Commands** (run from `jtech-tasklist-backend/`):
+  - `./gradlew bootRun` — start dev server
+  - `./gradlew test` — run tests (JUnit 5 + Mockito)
+  - `./gradlew build` — build (includes tests)
+  - `./gradlew jacocoTestReport` — coverage report
+- **Database**: PostgreSQL via env vars (`DS_URL`, `DS_PORT`, `DS_DATABASE`, `DS_USER`, `DS_PASS`). Defaults to `localhost:5432/sansys_database`
+- **Tests**: H2 in-memory, config in `src/test/resources/application-test.properties`, `ddl-auto=create`
+- **Server port**: `PORT` env var (default `0` = random). `server.forward-headers-strategy: framework`
+- **Swagger**: enabled at `/doc/tasklist/v1/api.html`, API docs at `/doc/tasklist/v3/api-documents`
+- **JPA**: `ddl-auto: none` in production — migration tool should manage schema
+- **Profile**: `PROFILE` env var (default `dev`)
+- **Publishing**: Nexus at `nexus.jtech.com.br`, requires `MAVEN_REPO_USER`/`MAVEN_REPO_PASS`
+- **Docker compose**: stub in `composer/docker-compose.yml` (empty services)
+- **Mockserver**: Flask-based in `mockserver/http-mockserver/` (Python, `requirements.txt`)
+- **Lombok**: used project-wide (compileOnly + annotationProcessor)
+
+## Frontend (`jtech-tasklist-frontend/`)
+
+- **Stack**: Vue 3 (Composition API), TypeScript, Vite 7, Vue Router 4, Pinia 3
+- **Node**: `^20.19.0 || >=22.12.0`
+- **Commands** (run from `jtech-tasklist-frontend/`):
+  - `npm run dev` — Vite dev server
+  - `npm run build` — type-check + build in parallel (`run-p` via npm-run-all2)
+  - `npm run type-check` — `vue-tsc --build`
+  - `npm run test:unit` — Vitest (jsdom environment)
+  - `npm run lint` — ESLint flat config (`eslint.config.ts`)
+  - `npm run format` — Prettier (`src/` only, semi:false, singleQuote:true, printWidth:100)
+- **Path alias**: `@` → `./src`
+- **Test files**: located in `src/**/__tests__/` (inferred from `vitest.config.ts` exclude + eslint plugin pattern)
+- **ESLint**: `pluginVue.configs['flat/essential']` + `vueTsConfigs.recommended` + `pluginVitest` for `__tests__` files
+- **EditorConfig**: 2-space indent, lf, utf-8, final newline, printWidth 100
+- **Build output**: `dist/` (gitignored)
+- **Coverage**: `coverage/` (gitignored)
+
+## General
+
+- Update npm deps in the frontend directory, Gradle deps in the backend directory
+- No CI/CD, no GitHub Actions, no Docker compose for backing services yet
+- Backend has no test code yet only test config (`src/test/resources/application-test.properties`)
