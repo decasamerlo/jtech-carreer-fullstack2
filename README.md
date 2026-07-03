@@ -108,6 +108,8 @@ Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos 
 ├── AGENTS.md                          # Instruções para agentes de IA
 ├── SPECIFICATION.md                   # Especificação original do desafio
 ├── README.md                          # Este arquivo
+├── .agents/skills/                    # Skills para agentes de IA (23 skills)
+├── skills-lock.json                   # Lock de versões das skills
 ├── jtech-tasklist-backend/
 │   ├── build.gradle                   # Dependências e configuração de build
 │   ├── composer/                      # Docker Compose para serviços de apoio

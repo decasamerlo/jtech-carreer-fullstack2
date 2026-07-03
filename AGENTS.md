@@ -7,6 +7,8 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 - **`README.md`** — Project documentation (architecture, setup, status)
 - **`SPECIFICATION.md`** — Original challenge spec (was README.md, renamed for preservation)
 - **`AGENTS.md`** — This file, guidance for AI agents
+- **`.agents/skills/`** — 23 installed agent skills (process, backend, frontend)
+- **`skills-lock.json`** — Lock file tracking skill sources and versions
 
 ## Backend (`jtech-tasklist-backend/`)
 
@@ -50,6 +52,20 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 - **EditorConfig**: 2-space indent, lf, utf-8, final newline, printWidth 100
 - **Build output**: `dist/` (gitignored)
 - **Coverage**: `coverage/` (gitignored)
+
+## Agent Skills
+
+Skills in `.agents/skills/` extend agent capabilities for this project's stack:
+
+| Category | Skills |
+|---|---|
+| **Process** | brainstorming, caveman-commit, writing-plans, executing-plans, tdd, systematic-debugging, verification-before-completion, requesting/receiving-code-review, subagent-driven-development, dispatching-parallel-agents, using-git-worktrees, finishing-a-development-branch, using-superpowers, writing-skills, find-skills |
+| **Backend** | spring-boot-security-jwt, hexagonal-architecture |
+| **Frontend** | vitest, typescript-advanced-types, vue-pinia-best-practices, vue-router-best-practices, vuetify0 |
+
+- `npx skills list` — list installed skills
+- `npx skills check` — check for updates
+- `npx skills update` — update all skills
 
 ## General
 
