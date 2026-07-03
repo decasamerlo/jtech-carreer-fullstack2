@@ -4,6 +4,10 @@
 
 Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklist-frontend/` (Vue 3).
 
+- **`README.md`** — Project documentation (architecture, setup, status)
+- **`SPECIFICATION.md`** — Original challenge spec (was README.md, renamed for preservation)
+- **`AGENTS.md`** — This file, guidance for AI agents
+
 ## Backend (`jtech-tasklist-backend/`)
 
 - **Stack**: Spring Boot 4.1.0, Java 25, Gradle 9.6.1, Spring Data JPA + Hibernate
