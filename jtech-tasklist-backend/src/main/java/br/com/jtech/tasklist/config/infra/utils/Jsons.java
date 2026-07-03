@@ -18,13 +18,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -65,7 +63,7 @@ public class Jsons {
         javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
         builder.timeZone("America/Sao_Paulo");
 
-        builder.modules(new ParameterNamesModule(), new Jdk8Module(), javaTimeModule);
+        builder.modules(javaTimeModule);
 
         builder.featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY,
                 DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, JsonParser.Feature.ALLOW_SINGLE_QUOTES);
