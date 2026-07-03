@@ -14,7 +14,7 @@ description = 'Demo project for Spring Boot'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(26)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 
@@ -25,8 +25,8 @@ configurations {
 }
 
 repositories {
-	maven { url = "https://nexus.jtech.com.br/repository/maven-public" }
 	mavenCentral()
+	maven { url = "https://nexus.jtech.com.br/repository/maven-public" }
 }
 
 dependencies {
