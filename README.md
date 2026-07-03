@@ -1,130 +1,279 @@
-# Desafio Técnico Fullstack2 - JTech
+# JTech Tasklist
 
-## Sistema TODO List Multi-usuário com Arquitetura Avançada
-
-### Contextualização e Objetivo
-
-A **JTech** busca desenvolvedores frontend experientes capazes de construir aplicações robustas e escaláveis com arquitetura bem definida. Este desafio avalia sua competência em gerenciamento de estado complexo, arquitetura modular e implementação de sistemas multi-usuário.
-
-**Objetivo:** Desenvolver uma aplicação frontend sofisticada que simule um sistema TODO List multi-usuário, demonstrando expertise em arquitetura de componentes, gerenciamento de estado avançado e boas práticas de desenvolvimento.
-
-## Especificações Técnicas
-
-### Requisitos Funcionais
-
-#### Sistema de Autenticação Simulada
-
-1. **Interface de Login**: Tela de autenticação com validação de campos não vazios
-2. **Autenticação Mock**: Qualquer combinação válida de usuário/senha redireciona para a aplicação
-3. **Persistência de Sessão**: Manter dados do usuário logado no estado global da aplicação
-
-#### Gerenciamento Avançado de Listas
-
-1. **Múltiplas Listas de Tarefas**: Usuário pode criar listas categorizadas (ex: "Trabalho", "Estudos", "Pessoal")
-2. **CRUD Completo de Listas**:
-   * Criar novas listas com nomes personalizados
-   * Renomear listas existentes com validação
-   * Excluir listas com confirmação e verificação de dependências
-3. **Navegação entre Listas**: Interface intuitiva para alternar entre diferentes listas
-
-#### Sistema Completo de Tarefas
-
-1. **Gerenciamento por Lista**: Cada lista mantém suas próprias tarefas independentemente
-2. **CRUD de Tarefas**: Adicionar, editar, remover e marcar tarefas como concluídas dentro de cada lista
-3. **Validações Avançadas**: Prevenção de duplicatas, validação de campos obrigatórios
-
-#### Persistência e Navegação
-
-1. **Estado Persistente**: Todo o estado (usuário, listas, tarefas) gerenciado pelo Pinia e persistido
-2. **Roteamento**: Vue Router para separar autenticação da aplicação principal
-3. **Guards de Rota**: Proteção de rotas para usuários não autenticados
-
-
-### Stack Tecnológica Obrigatória
-
-* **Framework**: Vue 3 (Composition API)
-* **Roteamento**: Vue Router 4
-* **Gerenciamento de Estado**: Pinia
-* **UI Framework**: Material Design (Vuetify ou biblioteca equivalente)
-* **Testes**: Vitest para testes unitários abrangentes
-* **TypeScript**: Fortemente recomendado para tipagem robusta
-
-# BACKEND
-
-## Especificações Técnicas
-
-### Requisitos Funcionais
-
-#### Sistema de Autenticação Segura
-
-1. **Registro de Usuários**:
-   * Endpoint `POST /auth/register` para cadastro com nome, email e senha
-   * Implementação de hash seguro de senhas utilizando bcrypt
-   * Validação de unicidade de email
-2. **Autenticação JWT**:
-   * Endpoint `POST /auth/login` para autenticação e geração de token JWT
-   * Implementação de refresh token para segurança aprimorada
-
-#### Gerenciamento de Tarefas com Segurança
-
-1. **CRUD Completo de Tarefas**:
-   * `POST /tasks`: Criar tarefa associada ao usuário autenticado
-   * `GET /tasks`: Listar exclusivamente tarefas do usuário logado
-   * `GET /tasks/{id}`: Buscar tarefa específica com validação de propriedade
-   * `PUT /tasks/{id}`: Atualizar tarefa com controle de acesso
-   * `DELETE /tasks/{id}`: Remover tarefa com validação de proprietário
-2. **Autorização Robusta**: Todas as rotas protegidas por JWT com validação de propriedade dos recursos
-
-### Requisitos Não Funcionais
-
-#### Arquitetura e Design Patterns
-
-1. **Princípios SOLID**: Implementação rigorosa dos cinco princípios em todas as camadas
-2. **Arquitetura em Camadas**: Estrutura bem definida (Controller → Service → Repository → Domain)
-3. **Injeção de Dependência**: Utilização adequada do Spring Framework para IoC
-4. **Exception Handling**: Sistema robusto de tratamento centralizado de exceções
-
-#### Qualidade e Testabilidade
-
-1. **Testes Unitários**: Cobertura completa da camada de serviço com cenários de sucesso e falha
-2. **Testes de Integração**: Validação end-to-end dos endpoints com Spring Test
-3. **Mocks e Stubs**: Utilização adequada de Mockito para isolamento de dependências
-
-### Stack Tecnológica Obrigatória
-
-* **Linguagem**: Java 17+
-* **Framework**: Spring Boot, Spring Security, Spring Validation
-* **Persistência**: Spring Data JPA com Hibernate
-* **Banco de Dados**: PostgreSQL
-* **Segurança**: JWT, BCrypt
-* **Testes**: JUnit 5, Mockito, Spring Boot Test
-
-## Critérios de Avaliação
-
-* **Aplicação de SOLID**: Demonstração clara e justificada dos princípios SOLID (critério principal)
-* **Qualidade Arquitetural**: Design limpo, modular com separação clara de responsabilidades
-* **Cobertura de Testes**: Suite robusta e significativa de testes unitários e de integração
-* **Implementação de Segurança**: Autenticação e autorização corretamente implementadas
-* **Domínio da Stack**: Utilização avançada e adequada do ecossistema Spring
-* **Domínio da Stack**: Utilização avançada das ferramentas do ecossistema Vue.js
-* **Modelagem de Dados**: Relacionamento bem definido entre entidades User e Task
-* **Documentação Técnica**: README detalhado com justificativas arquiteturais
-
-## Expectativa de Entrega
-
-* **Prazo**: Até 3 dias corridos a partir do recebimento.
-* **Formato**: Repositório Git com código-fonte completo e documentação detalhada.
-
-### Estrutura Obrigatória do `README.md`
-
-1. **Visão Geral da Arquitetura**: Descrição detalhada da estrutura e decisões arquiteturais
-2. **Stack Tecnológica**: Lista completa com justificativas para cada escolha
-3. **Como Rodar Localmente**: Instruções passo a passo para setup e execução
-4. **Como Rodar os Testes**: Comandos para executar suite completa de testes
-5. **Estrutura de Pastas Detalhada**: Mapeamento completo da organização modular do código
-6. **Decisões Técnicas Aprofundadas**: Justificativas detalhadas sobre escolhas arquiteturais, padrões e bibliotecas
-7. **Melhorias e Roadmap**: Propostas técnicas para evolução e escalabilidade da aplicação
+Sistema TODO List multi-usuário com arquitetura hexagonal no backend e componentização reativa no frontend. Solução fullstack para o desafio técnico Fullstack2 da JTech.
 
 ---
 
-**Boa sorte! A JTech espera uma solução que demonstre maturidade em desenvolvimento frontend e visão arquitetural.**
+## Stack Tecnológica
+
+### Backend (`jtech-tasklist-backend/`)
+
+| Tecnologia | Versão | Justificativa |
+|---|---|---|
+| **Java** | 25 | LTS com suporte a padrões modernos de concorrência e performance |
+| **Spring Boot** | 4.1.0 | Ecossistema maduro para aplicações enterprise com injeção de dependência nativa |
+| **Spring Data JPA + Hibernate** | — | Mapeamento objeto-relacional robusto com suporte a locks otimistas e cache |
+| **Springdoc OpenAPI** | 3.0.3 | Geração automática de documentação OpenAPI 3.0 sem acoplamento ao código |
+| **Hibernate Validator** | 9.1.0.Final | Validação declarativa via Jakarta Bean Validation 3.1 |
+| **Spring Actuator** | — | Métricas e health checks para observabilidade em produção |
+| **PostgreSQL** | — | Banco relacional com suporte a JSONB, índices parciais e MVCC |
+| **H2** | — | Banco em memória para testes de integração isolados |
+| **Lombok** | — | Redução de boilerplate em entidades e DTOs |
+| **Gradle** | 9.6.1 | Build incremental com cache inteligente e suporte a toolchains |
+| **AssertJ** | 3.27.7 | Asserções fluidas com mensagens de erro descritivas |
+| **JUnit Platform Suite** | 6.1.1 | Suite de testes modular com tags e filtros |
+
+### Frontend (`jtech-tasklist-frontend/`)
+
+| Tecnologia | Versão | Justificativa |
+|---|---|---|
+| **Vue 3** | 3.5.39 | Composition API com reatividade fina e tree-shaking nativo |
+| **TypeScript** | 6.0.3 | Tipagem estática para robustez em manutenção e refatoração |
+| **Vite** | 7.3.5 | Build instantâneo com HMR nativo via ESM |
+| **Vue Router** | 5.1.0 | Roteamento SPA com lazy-loading e guards de navegação |
+| **Pinia** | 3.0.4 | Gerenciamento de estado com suporte a DevTools e extensões |
+| **Vitest** | 4.1.9 | Testes unitários compatíveis com ecossistema Vite |
+| **ESLint** | 10.6.0 | Análise estática com regras específicas para Vue e TypeScript |
+| **Prettier** | 3.9.4 | Formatação consistente sem debates de estilo |
+
+---
+
+## Visão Geral da Arquitetura
+
+```
+┌────────────────────────────────────────────────────────────┐
+│                    Frontend (Vue 3 SPA)                    │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐  │
+│  │  Views   │→ │  Stores  │→ │  Router  │  │ Components │  │
+│  │(páginas) │  │  (Pinia) │  │ (guards) │  │ (reutiliz.)│  │
+│  └──────────┘  └──────────┘  └──────────┘  └────────────┘  │
+└──────────────────────────┬─────────────────────────────────┘
+                           │ HTTP (REST)                      
+┌──────────────────────────▼─────────────────────────────────┐
+│                    Backend (Spring Boot)                   │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │                  Adaptadores Input                   │  │
+│  │      ┌──────────────────────────────────────┐        │  │
+│  │      │         Controllers REST             │        │  │
+│  │      │         /tasklist/*                  │        │  │
+│  │      └───────────────┬──────────────────────┘        │  │
+│  └──────────────────────┼───────────────────────────────┘  │
+│                         │                                  │
+│  ┌──────────────────────▼───────────────────────────────┐  │
+│  │            Portas de Entrada (Input Ports)           │  │
+│  │       Interfaces que definem casos de uso            │  │
+│  └──────────────────────┬───────────────────────────────┘  │
+│                         │                                  │
+│  ┌──────────────────────▼───────────────────────────────┐  │
+│  │            Application Core (Casos de Uso)           │  │
+│  │   Domínios   │   Use Cases   │   Ports (in/out)      │  │
+│  │  (entities)  │  (serviços)   │  (interfaces)         │  │
+│  └──────────────────────┬───────────────────────────────┘  │
+│                         │                                  │
+│  ┌──────────────────────▼───────────────────────────────┐  │
+│  │             Portas de Saída (Output Ports)           │  │
+│  └──────────────────────┬───────────────────────────────┘  │
+│                         │                                  │
+│  ┌──────────────────────▼───────────────────────────────┐  │
+│  │              Adaptadores Output                      │  │
+│  │  ┌────────────────┐  ┌──────────────────────────────┐│  │
+│  │  │  Repositories  │  │  JPA Entities + Mappers      ││  │
+│  │  └────────────────┘  └──────────────────────────────┘│  │
+│  └──────────────────────────────────────────────────────┘  │
+└────────────────────────────────────────────────────────────┘
+```
+
+### Backend: Arquitetura Hexagonal (Ports & Adapters)
+
+Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos (bancos, frameworks, protocolos):
+
+- **`application/core/`** — Domínios puros (entidades sem anotações de infra) e casos de uso (use cases) que orquestram regras de negócio
+- **`application/ports/`** — Interfaces que definem contratos: portas de entrada (input: o que o sistema faz) e portas de saída (output: dependências externas que o sistema precisa)
+- **`adapters/input/`** — Controladores REST que traduzem requisições HTTP em chamadas aos casos de uso
+- **`adapters/output/`** — Implementações concretas de repositórios JPA, mapeamento entre entidades de domínio e entidades de persistência
+- **`config/`** — Configuração de beans, swagger, exception handlers globais e utilitários
+
+### Frontend: Arquitetura Reativa com Composição
+
+- **Views** — Páginas associadas a rotas (home, about)
+- **Components** — Componentes reutilizáveis (HelloWorld, WelcomeItem)
+- **Stores (Pinia)** — Gerenciamento de estado global (counter store de exemplo)
+- **Router** — Navegação SPA com lazy-loading de rotas
+
+---
+
+## Estrutura de Pastas Detalhada
+
+```
+├── AGENTS.md                          # Instruções para agentes de IA
+├── SPECIFICATION.md                   # Especificação original do desafio
+├── README.md                          # Este arquivo
+├── jtech-tasklist-backend/
+│   ├── build.gradle                   # Dependências e configuração de build
+│   ├── composer/                      # Docker Compose para serviços de apoio
+│   ├── mockserver/                    # Mockserver Flask para testes de integração
+│   └── src/
+│       ├── main/
+│       │   ├── java/br/com/jtech/tasklist/
+│       │   │   ├── StartTasklist.java # Main class
+│       │   │   ├── adapters/
+│       │   │   │   ├── input/         # Controllers REST + DTOs de request/response
+│       │   │   │   └── output/        # Implementações JPA + mappers domínio↔entidade
+│       │   │   ├── application/
+│       │   │   │   ├── core/          # Domínios puros e casos de uso (regras de negócio)
+│       │   │   │   └── ports/         # Interfaces de entrada e saída (contratos)
+│       │   │   └── config/            # Beans, swagger, exception handlers, utils
+│       │   └── resources/             # application.yml, banner.txt
+│       └── test/
+│           └── resources/             # application-test.properties (H2)
+│
+└── jtech-tasklist-frontend/
+    ├── package.json                   # Dependências e scripts npm
+    ├── vite.config.ts                 # Configuração do Vite
+    ├── tsconfig.json                  # TypeScript config (app, node, vitest)
+    ├── eslint.config.ts               # ESLint flat config
+    ├── .prettierrc                    # Configuração do Prettier
+    ├── env.d.ts                       # Declarações de tipos globais
+    ├── index.html                     # Entry point HTML
+    └── src/
+        ├── main.ts                    # Bootstrap: Pinia + Router
+        ├── App.vue                    # Componente raiz
+        ├── assets/                    # CSS global e imagens
+        ├── components/                # Componentes reutilizáveis + __tests__
+        ├── router/                    # Configuração de rotas
+        ├── stores/                    # Stores Pinia (estado global)
+        └── views/                     # Páginas da aplicação
+```
+
+---
+
+## Como Rodar Localmente
+
+### Pré-requisitos
+
+- **Java 25** (toolchain configurada no Gradle)
+- **Node.js** `^20.19.0 || >=22.12.0`
+- **PostgreSQL** (ou H2 para testes)
+
+### Backend
+
+```bash
+cd jtech-tasklist-backend
+./gradlew bootRun
+```
+
+O servidor inicia em uma porta aleatória por padrão. Defina `PORT` para fixar:
+
+```bash
+PORT=8080 ./gradlew bootRun
+```
+
+Acessar Swagger: http://localhost:8080/doc/tasklist/v1/api.html
+
+### Frontend
+
+```bash
+cd jtech-tasklist-frontend
+npm install
+npm run dev
+```
+
+Acessar: http://localhost:5173
+
+---
+
+## Como Rodar os Testes
+
+### Backend (JUnit 5 + AssertJ)
+
+```bash
+cd jtech-tasklist-backend
+./gradlew test                      # Executa todos os testes
+./gradlew build                     # Build completo com testes
+./gradlew jacocoTestReport          # Relatório de cobertura
+```
+
+### Frontend (Vitest)
+
+```bash
+cd jtech-tasklist-frontend
+npm run test:unit                   # Testes unitários
+npm run type-check                  # Verificação de tipos
+npm run lint                        # Análise estática
+npm run build                       # Type-check + build
+```
+
+---
+
+## Decisões Técnicas Aprofundadas
+
+### Arquitetura Hexagonal (Ports & Adapters)
+
+O projeto foi herdado com arquitetura hexagonal, que isola o núcleo de negócio de frameworks e bancos de dados. As regras de domínio em `application/core/domains/` não possuem nenhuma anotação JPA ou Spring — são POJOs puros testáveis sem infraestrutura. A inversão de dependência é garantida porque os adaptadores de saída implementam portas definidas pelo núcleo, e não o contrário.
+
+### Composition API + TypeScript
+
+O frontend utiliza Composition API com `<script setup>` para aproveitar inferência de tipos nativa do TypeScript sem decorators. A reatividade fina do Vue 3 (via `ref`/`reactive`) permite que o Pinia gerencie estado compartilhado entre componentes sem prop drilling.
+
+### Separação Domínio vs Persistência
+
+`TasklistEntity` (entidade JPA com anotações `@Entity`, `@Table`) é distinta de `Tasklist` (domínio puro). O adapter de saída (`CreateTasklistAdapter`) realiza o mapeamento entre ambas, permitindo evolução independente do schema de banco e do modelo de domínio.
+
+---
+
+## Status do Projeto
+
+Projeto partiu de um skeleton mínimo. Nenhum requisito funcional da SPECIFICATION.md foi implementado ainda.
+
+### O que já veio no skeleton
+- **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator
+- **Frontend**: Vue 3 + Vite + Pinia + Vue Router + ESLint + Vitest (scaffold padrão)
+
+### O que precisa ser implementado (SPECIFICATION.md)
+
+#### Backend
+- `POST /auth/register` — cadastro com bcrypt e validação de email único
+- `POST /auth/login` — JWT + refresh token
+- `POST /tasks` — criar tarefa vinculada ao usuário autenticado
+- `GET /tasks` — listar tarefas do próprio usuário
+- `GET /tasks/{id}` — buscar tarefa com validação de propriedade
+- `PUT /tasks/{id}` — atualizar com controle de acesso
+- `DELETE /tasks/{id}` — remover com validação de proprietário
+- Autorização JWT em todas as rotas
+- Testes unitários (serviços) e de integração (endpoints)
+
+#### Frontend (autenticação simulada — não consome backend)
+- Tela de login com validação de campos não vazios
+- Mock de autenticação: qualquer credencial válida redireciona para a app
+- Persistência de sessão no Pinia
+- Múltiplas listas de tarefas com CRUD completo
+- Navegação entre listas
+- CRUD de tarefas dentro de cada lista
+- Validações (duplicatas, campos obrigatórios)
+- Vue Router separando auth → app
+- Guards de rota para usuários não autenticados
+- Vuetify (Material Design) — instalar e migrar UI
+
+---
+
+## Melhorias e Roadmap
+
+Todas as melhorias abaixo correspondem diretamente aos requisitos da SPECIFICATION.md, organizadas por ordem de implementação.
+
+### Fase 1 — Autenticação
+1. **Backend**: Spring Security + JWT + bcrypt — endpoints `/auth/register` e `/auth/login`
+2. **Frontend**: Tela de login com validação, mock auth, sessão no Pinia, guards de rota
+
+### Fase 2 — Funcionalidade Core
+3. **Backend**: CRUD de tarefas com validação de propriedade (`/tasks/*`)
+4. **Frontend**: Múltiplas listas, CRUD de listas e tarefas, navegação entre listas
+5. **Vuetify**: Instalar e migrar toda UI para Material Design
+
+### Fase 3 — Qualidade
+6. **Testes backend**: Unitários (serviços com Mockito) + integração (endpoints com Spring Test)
+7. **Testes frontend**: Vitest para stores, componentes e views
+
+### Futuro (pós-entrega)
+8. Docker Compose com PostgreSQL + app + mockserver
+9. CI/CD com build + testes + publish no Nexus
+10. Persistência offline (LocalStorage + Service Worker)

@@ -6,16 +6,19 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 
 ## Backend (`jtech-tasklist-backend/`)
 
-- **Stack**: Spring Boot 3.5.5, Java 21, Gradle 8.14, Spring Data JPA + Hibernate
+- **Stack**: Spring Boot 4.1.0, Java 25, Gradle 9.6.1, Spring Data JPA + Hibernate
 - **Architecture**: Hexagonal (`application/` → core/domains/ports/usecases, `adapters/` → input/controllers, output/repositories, `config/`)
+- **Dependencies**: Spring Web, Spring Data JPA, Spring Actuator, Springdoc OpenAPI 3.0.3, Hibernate Validator 9.1.0.Final, Lombok, PostgreSQL, H2 (test)
+- **Still missing**: Spring Security + JWT (required per challenge spec, not yet added)
 - **Main class**: `br.com.jtech.tasklist.StartTasklist`
 - **Commands** (run from `jtech-tasklist-backend/`):
   - `./gradlew bootRun` — start dev server
-  - `./gradlew test` — run tests (JUnit 5 + Mockito)
+  - `./gradlew test` — run tests (JUnit 5 + AssertJ)
   - `./gradlew build` — build (includes tests)
   - `./gradlew jacocoTestReport` — coverage report
 - **Database**: PostgreSQL via env vars (`DS_URL`, `DS_PORT`, `DS_DATABASE`, `DS_USER`, `DS_PASS`). Defaults to `localhost:5432/sansys_database`
 - **Tests**: H2 in-memory, config in `src/test/resources/application-test.properties`, `ddl-auto=create`
+- **Test frameworks**: JUnit Platform Suite 6.1.1, AssertJ 3.27.7, Bean Matchers 0.14
 - **Server port**: `PORT` env var (default `0` = random). `server.forward-headers-strategy: framework`
 - **Swagger**: enabled at `/doc/tasklist/v1/api.html`, API docs at `/doc/tasklist/v3/api-documents`
 - **JPA**: `ddl-auto: none` in production — migration tool should manage schema
@@ -27,8 +30,9 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 
 ## Frontend (`jtech-tasklist-frontend/`)
 
-- **Stack**: Vue 3 (Composition API), TypeScript, Vite 7, Vue Router 4, Pinia 3
+- **Stack**: Vue 3.5 (Composition API), TypeScript 6, Vite 7, Vue Router 5, Pinia 3, Vitest 4
 - **Node**: `^20.19.0 || >=22.12.0`
+- **Still missing**: Vuetify / Material Design (required per challenge spec, not yet installed)
 - **Commands** (run from `jtech-tasklist-frontend/`):
   - `npm run dev` — Vite dev server
   - `npm run build` — type-check + build in parallel (`run-p` via npm-run-all2)
