@@ -60,11 +60,10 @@ Recent history:
 
 ### 2. Branch Decision
 
-Ask the user to choose a branch strategy:
+Use the `question` tool to let the user pick a branch:
 
 - Suggest 2-3 conventional branch names based on the detected changes (use prefixes: `feat/`, `fix/`, `docs/`, `refactor/`, `test/`, `chore/`)
 - Offer option to **keep using the current branch** (show the current branch name)
-- Let the user pick
 
 If a new branch is chosen, create it.
 
@@ -79,15 +78,11 @@ Review the changes:
 
 Draft a conventional commit message (caveman-commit style: subject ≤50 chars, body only when the "why" isn't obvious).
 
-Show the draft to the user and ask for approval. Allow them to suggest edits.
-
-Once approved:
-- Stage all relevant files
-- Commit with the approved message
+Show the draft to the user using the `question` tool with options to **approve** or **edit**. The tool already includes a free-form "Type your answer" field — if the user types their own message there, use it directly.
 
 ### 4. Push
 
-Push the branch to remote (set upstream if needed).
+Push the branch to remote (set upstream if needed). Do not ask for approval.
 
 ### 5. Pull Request Draft
 
@@ -95,8 +90,6 @@ Draft a PR summary with:
 - **Title**: derived from the commit message
 - **Body**: summary of changes, breaking changes (if any), related issues
 
-Show the draft to the user and ask for approval. Allow edits.
+Show the draft to the user using the `question` tool with options to **approve** or **edit**. The tool already includes a free-form "Type your answer" field — if the user types their own version there, use it directly.
 
-Once approved:
-- Create the PR via `gh pr create`
-- Show the PR URL to the user
+If approved, create the PR via `gh pr create` and show the URL.
