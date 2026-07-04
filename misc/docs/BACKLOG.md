@@ -3,7 +3,7 @@
 ## Layer 1 — Infrastructure
 
 ### audit-base-class
-Create `@MappedSuperclass` base entity with `createdAt`, `updatedAt`, `createdBy`, `updatedBy`. Enable `@EnableJpaAuditing` + `AuditingEntityListener`. Extend JPA entities from it.
+Create `BaseDomain<T>` (abstract domain POJO) and `BaseEntity<T>` (`@MappedSuperclass` with JPA auditing) containing: id, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy. Entity adds `@Version` for optimistic locking. Includes soft-delete helpers (`markAsDeleted`, `restore`, `isDeleted`), `AuditorAwareImpl`, `JpaAuditingConfig`, and Flyway migration `V002__add_audit_columns_to_tasklist.sql`.
 
 ### pinia-persist
 Install `pinia-plugin-persistedstate`. Configure automatic localStorage persistence for auth and list stores.

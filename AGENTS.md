@@ -30,6 +30,7 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 - **Swagger**: enabled at `/doc/tasklist/v1/api.html`, API docs at `/doc/tasklist/v3/api-documents`
 - **Migrations**: Flyway migrations in `src/main/resources/db/migration/` with `V###__description.sql` naming convention
 - **JPA**: `ddl-auto: none` in production — Flyway manages schema via `db/migration/V*.sql`
+- **Audit base classes**: `application/core/domains/BaseDomain.java` (pure domain POJO with `T id` + audit + soft-delete helpers), `adapters/output/repositories/entities/BaseEntity.java` (`@MappedSuperclass` with Spring Data JPA Auditing annotations + `@Version`), `config/infra/audit/AuditorAwareImpl.java`, `config/infra/audit/JpaAuditingConfig.java`
 - **Profile**: `PROFILE` env var (default `dev`)
 - **Publishing**: Nexus at `nexus.jtech.com.br`, requires `MAVEN_REPO_USER`/`MAVEN_REPO_PASS`
 - **Docker compose**: PostgreSQL 18.4 service in `docker-compose.yml` (for local dev, run from `jtech-tasklist-backend/`)
