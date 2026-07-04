@@ -1,6 +1,5 @@
 ---
 description: Create PR with branch, commit, and push
-subtask: true
 ---
 
 <summary>
