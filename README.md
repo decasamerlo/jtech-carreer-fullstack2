@@ -155,12 +155,21 @@ Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos 
 
 - **Java 25** (toolchain configurada no Gradle)
 - **Node.js** `^20.19.0 || >=22.12.0`
-- **PostgreSQL** (ou H2 para testes)
+- **PostgreSQL** (via Docker Compose em `docker-compose.yml`, ou H2 para testes)
 
 ### Backend
 
+Primeiro, inicie o PostgreSQL via Docker Compose:
+
 ```bash
 cd jtech-tasklist-backend
+docker compose up -d
+docker compose ps   # Verificar se está pronto
+```
+
+Depois, inicie a aplicação:
+
+```bash
 ./gradlew bootRun
 ```
 
@@ -171,6 +180,13 @@ PORT=8080 ./gradlew bootRun
 ```
 
 Acessar Swagger: http://localhost:8080/doc/tasklist/v1/api.html
+
+Para parar o banco ao finalizar:
+```bash
+docker compose down
+# Para remover os dados (volume):
+docker compose down -v
+```
 
 ### Frontend
 

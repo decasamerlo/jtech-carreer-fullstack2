@@ -23,7 +23,7 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
   - `./gradlew test` — run tests (JUnit 5 + AssertJ)
   - `./gradlew build` — build (includes tests)
   - `./gradlew jacocoTestReport` — coverage report
-- **Database**: PostgreSQL via env vars (`DS_URL`, `DS_PORT`, `DS_DATABASE`, `DS_USER`, `DS_PASS`). Defaults to `localhost:5432/sansys_database`
+- **Database**: PostgreSQL via env vars (`DS_URL`, `DS_PORT`, `DS_DATABASE`, `DS_USER`, `DS_PASS`). Defaults to `localhost:5432/jtech_tasklist`
 - **Tests**: H2 in-memory, config in `src/test/resources/application-test.properties`, `ddl-auto=create`
 - **Test frameworks**: JUnit Platform Suite 6.1.1, AssertJ 3.27.7, Bean Matchers 0.14
 - **Server port**: `PORT` env var (default `0` = random). `server.forward-headers-strategy: framework`
@@ -31,7 +31,7 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 - **JPA**: `ddl-auto: none` in production — migration tool should manage schema
 - **Profile**: `PROFILE` env var (default `dev`)
 - **Publishing**: Nexus at `nexus.jtech.com.br`, requires `MAVEN_REPO_USER`/`MAVEN_REPO_PASS`
-- **Docker compose**: stub in `composer/docker-compose.yml` (empty services)
+- **Docker compose**: PostgreSQL 18.4 service in `docker-compose.yml` (for local dev, run from `jtech-tasklist-backend/`)
 - **Mockserver**: Flask-based in `mockserver/http-mockserver/` (Python, `requirements.txt`)
 - **Lombok**: used project-wide (compileOnly + annotationProcessor)
 
