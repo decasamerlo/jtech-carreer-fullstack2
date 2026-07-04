@@ -33,6 +33,7 @@ You MUST investigate the given topic thoroughly before proposing solutions.
    - Implementation options (with trade-offs)
    - Suggested task breakdown
    - Test plan recommendations
+   - **Documentation impact** — Suggest which docs need updating (AGENTS.md, README.md, misc/docs/BACKLOG.md) and whether a new misc/docs/ file should be created
    - What to do next
 
-4. **Task creation** — Present the report to the developer. If they approve task creation, load the `writing-plans` skill and create a structured plan with actionable tasks.
+4. **Task creation** — Present the report to the developer. Include the documentation suggestions from step 3 for their awareness. If they approve task creation, load the `writing-plans` skill and create a structured plan with actionable tasks.
