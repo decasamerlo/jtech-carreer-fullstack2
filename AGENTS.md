@@ -5,11 +5,11 @@
 Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklist-frontend/` (Vue 3).
 
 - **`README.md`** — Project documentation (architecture, setup, status)
-- **`SPECIFICATION.md`** — Original challenge spec (was README.md, renamed for preservation)
+- **`misc/docs/SPECIFICATION.md`** — Original challenge spec (was README.md, renamed for preservation)
 - **`AGENTS.md`** — This file, guidance for AI agents
 - **`.agents/skills/`** — 23 installed agent skills (process, backend, frontend)
 - **`skills-lock.json`** — Lock file tracking skill sources and versions
-- **`misc/BACKLOG.md`** — Implementation backlog (worktree tasks with dependencies)
+- **`misc/docs/BACKLOG.md`** — Implementation backlog (worktree tasks with dependencies)
 
 ## Backend (`jtech-tasklist-backend/`)
 
