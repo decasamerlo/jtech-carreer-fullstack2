@@ -30,6 +30,9 @@ Install Vuetify + @mdi/font. Migrate UI to Material Design. Depends on: frontend
 
 ## Layer 3 — Quality
 
+### refactor-domain-mappers
+Move `toEntity()`, `of(TasklistEntity)`, and `of(TasklistRequest)` out of `Tasklist` domain class into dedicated adapter-layer mappers (`adapters/output/repositories/mappers/` and controller DTOs). Domain should have zero imports from adapters or input protocols (DIP violation). Update all callers. Depends on: audit-base-class.
+
 ### tests-backend
 Write unit tests (Mockito) and integration tests (Spring Test + H2). Depends on: backend-auth, backend-tasks.
 
