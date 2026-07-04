@@ -15,7 +15,7 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 
 - **Stack**: Spring Boot 4.1.0, Java 25, Gradle 9.6.1, Spring Data JPA + Hibernate
 - **Architecture**: Hexagonal (`application/` → core/domains/ports/usecases, `adapters/` → input/controllers, output/repositories, `config/`)
-- **Dependencies**: Spring Web, Spring Data JPA, Spring Actuator, Springdoc OpenAPI 3.0.3, Hibernate Validator 9.1.0.Final, Lombok, PostgreSQL, H2 (test)
+- **Dependencies**: Spring Web, Spring Data JPA, Spring Actuator, Springdoc OpenAPI 3.0.3, Hibernate Validator 9.1.0.Final, Lombok, PostgreSQL, H2 (test), Flyway (core + postgresql)
 - **Still missing**: Spring Security + JWT (required per challenge spec, not yet added)
 - **Main class**: `br.com.jtech.tasklist.StartTasklist`
 - **Commands** (run from `jtech-tasklist-backend/`):
@@ -24,11 +24,12 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
   - `./gradlew build` — build (includes tests)
   - `./gradlew jacocoTestReport` — coverage report
 - **Database**: PostgreSQL via env vars (`DS_URL`, `DS_PORT`, `DS_DATABASE`, `DS_USER`, `DS_PASS`). Defaults to `localhost:5432/jtech_tasklist`
-- **Tests**: H2 in-memory, config in `src/test/resources/application-test.properties`, `ddl-auto=create`
+- **Tests**: H2 in-memory, config in `src/test/resources/application-test.properties`, `ddl-auto=create`, Flyway disabled
 - **Test frameworks**: JUnit Platform Suite 6.1.1, AssertJ 3.27.7, Bean Matchers 0.14
 - **Server port**: `PORT` env var (default `0` = random). `server.forward-headers-strategy: framework`
 - **Swagger**: enabled at `/doc/tasklist/v1/api.html`, API docs at `/doc/tasklist/v3/api-documents`
-- **JPA**: `ddl-auto: none` in production — migration tool should manage schema
+- **Migrations**: Flyway migrations in `src/main/resources/db/migration/` with `V###__description.sql` naming convention
+- **JPA**: `ddl-auto: none` in production — Flyway manages schema via `db/migration/V*.sql`
 - **Profile**: `PROFILE` env var (default `dev`)
 - **Publishing**: Nexus at `nexus.jtech.com.br`, requires `MAVEN_REPO_USER`/`MAVEN_REPO_PASS`
 - **Docker compose**: PostgreSQL 18.4 service in `docker-compose.yml` (for local dev, run from `jtech-tasklist-backend/`)

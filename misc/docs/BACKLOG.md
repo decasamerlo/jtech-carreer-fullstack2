@@ -2,12 +2,6 @@
 
 ## Layer 1 — Infrastructure
 
-### dev-docker-postgres
-Set up `dev` profile with Docker PostgreSQL, similar to prod configs. Use H2 in-memory only for tests.
-
-### flyway-migration
-Add Flyway to build.gradle with `ddl-auto=none`. Create initial migration with the existing `tasklist` table. Add incremental migrations as new entities are created.
-
 ### prod-docker-compose
 Define PostgreSQL service in docker-compose.yml. Configure `prod` profile pointing to the container. Depends on: flyway-migration.
 
@@ -47,3 +41,7 @@ Write Vitest tests for stores, views, and components. Depends on: frontend-auth,
 
 ### docs-readme
 Write final README.md per SPEC: architecture overview, stack with justifications, setup, tests, folder structure, technical decisions, roadmap.
+
+## Done
+- dev-docker-postgres
+- flyway-migration
