@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,11 +18,11 @@ public abstract class BaseDomain<T> {
     private T id;
 
     private LocalDateTime createdAt;
-    private UUID createdBy;
+    private String createdBy;
     private LocalDateTime updatedAt;
-    private UUID updatedBy;
+    private String updatedBy;
     private LocalDateTime deletedAt;
-    private UUID deletedBy;
+    private String deletedBy;
 
     public boolean isDeleted() {
         return deletedAt != null;
@@ -33,7 +32,7 @@ public abstract class BaseDomain<T> {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void markAsDeleted(UUID userId) {
+    public void markAsDeleted(String userId) {
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = userId;
     }
