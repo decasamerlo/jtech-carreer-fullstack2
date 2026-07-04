@@ -2,9 +2,6 @@
 
 ## Layer 1 — Infrastructure
 
-### prod-docker-compose
-Define PostgreSQL service in docker-compose.yml. Configure `prod` profile pointing to the container. Depends on: flyway-migration.
-
 ### audit-base-class
 Create `@MappedSuperclass` base entity with `createdAt`, `updatedAt`, `createdBy`, `updatedBy`. Enable `@EnableJpaAuditing` + `AuditingEntityListener`. Extend JPA entities from it.
 
@@ -41,6 +38,10 @@ Write Vitest tests for stores, views, and components. Depends on: frontend-auth,
 
 ### docs-readme
 Write final README.md per SPEC: architecture overview, stack with justifications, setup, tests, folder structure, technical decisions, roadmap.
+
+## Parked
+
+- prod-docker-compose
 
 ## Done
 - dev-docker-postgres
