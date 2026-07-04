@@ -9,6 +9,7 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 - **`AGENTS.md`** — This file, guidance for AI agents
 - **`.agents/skills/`** — 23 installed agent skills (process, backend, frontend)
 - **`skills-lock.json`** — Lock file tracking skill sources and versions
+- **`misc/BACKLOG.md`** — Implementation backlog (worktree tasks with dependencies)
 
 ## Backend (`jtech-tasklist-backend/`)
 
