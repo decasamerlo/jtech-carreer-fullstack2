@@ -88,9 +88,11 @@ Sistema TODO List multi-usuário com arquitetura hexagonal no backend e componen
 Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos (bancos, frameworks, protocolos):
 
 - **`application/core/`** — Domínios puros (entidades sem anotações de infra) e casos de uso (use cases) que orquestram regras de negócio
+   - `application/core/domains/` também contém `BaseDomain<T>` — classe base abstrata com campos de auditoria (id, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy) e helpers para soft delete
 - **`application/ports/`** — Interfaces que definem contratos: portas de entrada (input: o que o sistema faz) e portas de saída (output: dependências externas que o sistema precisa)
 - **`adapters/input/`** — Controladores REST que traduzem requisições HTTP em chamadas aos casos de uso
 - **`adapters/output/`** — Implementações concretas de repositórios JPA, mapeamento entre entidades de domínio e entidades de persistência
+   - Entidades JPA estendem `BaseEntity<T>` (`@MappedSuperclass` com Spring Data Auditing, `@Version` para lock otimista, mesmos campos de auditoria + soft delete)
 - **`config/`** — Configuração de beans, swagger, exception handlers globais e utilitários
 
 ### Frontend: Arquitetura Reativa com Composição
@@ -124,6 +126,7 @@ Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos 
 │       │   │   ├── application/
 │       │   │   │   ├── core/          # Domínios puros e casos de uso (regras de negócio)
 │       │   │   │   └── ports/         # Interfaces de entrada e saída (contratos)
+│       │   │   ├── config/infra/audit/   # AuditorAwareImpl, JpaAuditingConfig
 │       │   │   └── config/            # Beans, swagger, exception handlers, utils
 │       │   └── resources/             # application.yml, banner.txt
 │       └── test/
