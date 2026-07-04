@@ -106,7 +106,7 @@ Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos 
 
 ```
 ├── AGENTS.md                          # Instruções para agentes de IA
-├── SPECIFICATION.md                   # Especificação original do desafio
+├── misc/docs/SPECIFICATION.md         # Especificação original do desafio
 ├── README.md                          # Este arquivo
 ├── .agents/skills/                    # Skills para agentes de IA (23 skills)
 ├── skills-lock.json                   # Lock de versões das skills
@@ -225,7 +225,7 @@ O frontend utiliza Composition API com `<script setup>` para aproveitar inferên
 
 ## Status do Projeto
 
-Projeto partiu de um skeleton mínimo. Nenhum requisito funcional da SPECIFICATION.md foi implementado ainda.
+Projeto partiu de um skeleton mínimo. Nenhum requisito funcional da [`misc/docs/SPECIFICATION.md`](./misc/docs/SPECIFICATION.md) foi implementado ainda.
 
 ### O que já veio no skeleton
 - **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator
@@ -233,4 +233,4 @@ Projeto partiu de um skeleton mínimo. Nenhum requisito funcional da SPECIFICATI
 
 ### O que precisa ser implementado
 
-Ver [`misc/BACKLOG.md`](./misc/BACKLOG.md) — backlog organizado em worktrees com dependências entre tarefas.
+Ver [`misc/docs/BACKLOG.md`](./misc/docs/BACKLOG.md) — backlog organizado em worktrees com dependências entre tarefas.
