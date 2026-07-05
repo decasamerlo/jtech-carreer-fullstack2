@@ -1,8 +1,6 @@
 # Backlog
 
-## Layer 1 — Infrastructure
-
-## Layer 2 — Features
+## Features
 
 ### backend-auth
 Implement Spring Security + JWT + bcrypt + refresh token. Expose POST /auth/register with unique email validation. Expose POST /auth/login. Build User domain, JwtProvider, SecurityConfig.
@@ -22,7 +20,7 @@ Implement CRUD for tasks per list (add, edit, remove, mark completion). Prevent 
 ### vuetify
 Install Vuetify + @mdi/font. Migrate UI to Material Design. Depends on: frontend-tasks-crud.
 
-## Layer 3 — Quality
+## Quality
 
 ### refactor-domain-mappers
 Move `toEntity()`, `of(TasklistEntity)`, and `of(TasklistRequest)` out of `Tasklist` domain class into dedicated adapter-layer mappers (`adapters/output/repositories/mappers/` and controller DTOs). Domain should have zero imports from adapters or input protocols (DIP violation). Update all callers. Depends on: audit-base-class.
@@ -36,9 +34,16 @@ Write Vitest tests for stores, views, and components. Depends on: frontend-auth,
 ### docs-readme
 Write final README.md per SPEC: architecture overview, stack with justifications, setup, tests, folder structure, technical decisions, roadmap.
 
+### error-mapping
+Review and standardize error mapping across backend (exception handlers, HTTP status codes, error response DTOs) and frontend (API error interception, user-facing messages).
+
 ## Parked
 
 - prod-docker-compose
+- misc-scripts
+- misc-queries
+- misc-utils
+- misc-tests
 
 ## Done
 - dev-docker-postgres
