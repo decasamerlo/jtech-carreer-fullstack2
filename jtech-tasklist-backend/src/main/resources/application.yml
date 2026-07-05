@@ -34,6 +34,12 @@ logging:
     br.com.jtech.tasklist: debug
   file:
     name: ./logs/${spring.application.name}.log
+app:
+  jwt:
+    secret: ${JWT_SECRET:404a6141c4e2b0e5a1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3}
+    access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
+    refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+
 springdoc:
   api-docs:
     groups:

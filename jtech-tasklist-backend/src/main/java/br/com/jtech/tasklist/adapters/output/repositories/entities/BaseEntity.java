@@ -2,6 +2,7 @@ package br.com.jtech.tasklist.adapters.output.repositories.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,10 +23,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@SQLRestriction("deleted_at IS NULL")
 public abstract class BaseEntity<T> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private T id;
 
     @CreatedDate
