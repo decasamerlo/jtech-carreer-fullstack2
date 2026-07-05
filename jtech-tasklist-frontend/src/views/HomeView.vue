@@ -1,14 +1,21 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
+const router = useRouter()
 const auth = useAuthStore()
+
+function handleLogout() {
+  auth.logout()
+  router.push({ name: 'login' })
+}
 </script>
 
 <template>
   <main>
     <h1>Welcome, {{ auth.user?.username }}!</h1>
     <p>You are signed in as {{ auth.user?.email }}</p>
-    <button @click="auth.logout()">Sign Out</button>
+    <button @click="handleLogout">Sign Out</button>
   </main>
 </template>
 
