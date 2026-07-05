@@ -9,23 +9,7 @@ You MUST ask for user approval at each stage before proceeding.
 </summary>
 
 <skill>
-using-git-worktrees
-</skill>
-
-<skill>
 caveman-commit
-</skill>
-
-<skill>
-finishing-a-development-branch
-</skill>
-
-<skill>
-requesting-code-review
-</skill>
-
-<skill>
-verification-before-completion
 </skill>
 
 <user_context>
