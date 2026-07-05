@@ -14,8 +14,11 @@ Sistema TODO List multi-usuário com arquitetura hexagonal no backend e componen
 | **Spring Boot** | 4.1.0 | Ecossistema maduro para aplicações enterprise com injeção de dependência nativa |
 | **Spring Data JPA + Hibernate** | — | Mapeamento objeto-relacional robusto com suporte a locks otimistas e cache |
 | **Springdoc OpenAPI** | 3.0.3 | Geração automática de documentação OpenAPI 3.0 sem acoplamento ao código |
+| **Spring Security** | — | Autenticação JWT com filtros stateless e controle de acesso |
+| **JJWT** | 0.12.6 | Criação e validação de tokens JWT com suporte a HMAC |
 | **Hibernate Validator** | 9.1.0.Final | Validação declarativa via Jakarta Bean Validation 3.1 |
 | **Spring Actuator** | — | Métricas e health checks para observabilidade em produção |
+| **Spring Security Test** | — | Suporte a testes de integração com autenticação simulada |
 | **PostgreSQL** | — | Banco relacional com suporte a JSONB, índices parciais e MVCC |
 | **H2** | — | Banco em memória para testes de integração isolados |
 | **Lombok** | — | Redução de boilerplate em entidades e DTOs |
@@ -183,6 +186,20 @@ O servidor inicia em uma porta aleatória por padrão. Defina `PORT` para fixar:
 PORT=8080 ./gradlew bootRun
 ```
 
+**Variáveis de ambiente relevantes:**
+
+| Variável | Padrão | Descrição |
+|---|---|---|
+| `PORT` | `0` (aleatória) | Porta do servidor |
+| `DS_URL` | `localhost` | Host do PostgreSQL |
+| `DS_PORT` | `5432` | Porta do PostgreSQL |
+| `DS_DATABASE` | `jtech_tasklist` | Nome do banco |
+| `DS_USER` | `postgres` | Usuário do banco |
+| `DS_PASS` | `postgres` | Senha do banco |
+| `JWT_SECRET` | `404a6141c4e2b0e5a1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3` | Chave HMAC para assinatura JWT (min 256-bit) |
+| `JWT_ACCESS_EXPIRATION` | `900000` (15 min) | Duração do access token em ms |
+| `JWT_REFRESH_EXPIRATION` | `604800000` (7 dias) | Duração do refresh token em ms |
+
 Acessar Swagger: http://localhost:8080/doc/tasklist/v1/api.html
 
 Para parar o banco ao finalizar:
@@ -241,16 +258,29 @@ O frontend utiliza Composition API com `<script setup>` para aproveitar inferên
 
 `TasklistEntity` (entidade JPA com anotações `@Entity`, `@Table`) é distinta de `Tasklist` (domínio puro). O adapter de saída (`CreateTasklistAdapter`) realiza o mapeamento entre ambas, permitindo evolução independente do schema de banco e do modelo de domínio.
 
+### Autenticação JWT com Refresh Token
+
+A autenticação segue o padrão **access token + refresh token**:
+
+- `POST /api/v1/auth/register` — Cadastro com nome, email e senha (bcrypt). Retorna access + refresh tokens.
+- `POST /api/v1/auth/login` — Autenticação com email + senha. Retorna access + refresh tokens.
+- `POST /api/v1/auth/refresh` — Rotação de refresh token. Recebe o refresh token atual, revoga-o e retorna um novo refresh token.
+
+O **access token** (JWT stateless, 15 min) é validado em toda requisição a endpoints protegidos via assinatura HMAC — sem consulta ao banco. O **refresh token** (stateful, 7 dias) armazenado no banco permite renovação sem reenvio de credenciais e pode ser revogado individualmente.
+
+A chave HMAC (`JWT_SECRET`) deve ser configurada via variável de ambiente.
+
 ---
 
 ## Status do Projeto
 
-Projeto partiu de um skeleton mínimo. Nenhum requisito funcional da [`misc/docs/SPECIFICATION.md`](./misc/docs/SPECIFICATION.md) foi implementado ainda.
+Projeto partiu de um skeleton mínimo.
 
-### O que já veio no skeleton
-- **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator
+### Implementado
+
+- **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator, **autenticação JWT com refresh token** (registro, login, refresh)
 - **Frontend**: Vue 3 + Vite + Pinia + Vue Router + ESLint + Vitest (scaffold padrão)
 
-### O que precisa ser implementado
+### Próximos passos
 
 Ver [`misc/docs/BACKLOG.md`](./misc/docs/BACKLOG.md) — backlog organizado em worktrees com dependências entre tarefas.
