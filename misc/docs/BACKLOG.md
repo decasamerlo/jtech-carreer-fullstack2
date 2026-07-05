@@ -17,6 +17,9 @@ Implement CRUD for lists with custom names, rename with validation, and delete w
 ### frontend-tasks-crud
 Implement CRUD for tasks per list (add, edit, remove, mark completion). Prevent duplicates, validate required fields. Depends on: frontend-lists-crud.
 
+### frontend-auth-config
+Add configuration flag to switch between mock auth (current) and real backend auth. Expose via env var (e.g. `VITE_AUTH_MODE=mock|api`). When `api`, `auth.login()` should POST to backend and await response before navigating. Depends on: frontend-auth, backend-auth.
+
 ### vuetify
 Install Vuetify + @mdi/font. Migrate UI to Material Design. Depends on: frontend-tasks-crud.
 
