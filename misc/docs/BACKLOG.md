@@ -8,9 +8,6 @@ Implement Spring Security + JWT + bcrypt + refresh token. Expose POST /auth/regi
 ### backend-tasks
 Implement CRUD /tasks/* with ownership validation. Apply Bean Validation on DTOs. Build Task domain, controller, repository. Depends on: backend-auth.
 
-### frontend-auth
-Build Login view with validation. Implement mock auth (any credential). Set up Auth store with persistence (pinia-persist). Add route guards. Depends on: pinia-persist.
-
 ### frontend-lists-crud
 Implement CRUD for lists with custom names, rename with validation, and delete with confirmation. Add navigation between lists. Persist store with pinia-persist. Depends on: frontend-auth, pinia-persist.
 
@@ -53,3 +50,4 @@ Review and standardize error mapping across backend (exception handlers, HTTP st
 - flyway-migration
 - audit-base-class
 - pinia-persist
+- frontend-auth
