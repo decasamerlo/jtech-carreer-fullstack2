@@ -32,6 +32,7 @@ Sistema TODO List multi-usuário com arquitetura hexagonal no backend e componen
 | **Vite** | 7.3.5 | Build instantâneo com HMR nativo via ESM |
 | **Vue Router** | 5.1.0 | Roteamento SPA com lazy-loading e guards de navegação |
 | **Pinia** | 3.0.4 | Gerenciamento de estado com suporte a DevTools e extensões |
+| **pinia-plugin-persistedstate** | 4.7.1 | Persistência automática de stores no localStorage/sessionStorage |
 | **Vitest** | 4.1.9 | Testes unitários compatíveis com ecossistema Vite |
 | **ESLint** | 10.6.0 | Análise estática com regras específicas para Vue e TypeScript |
 | **Prettier** | 3.9.4 | Formatação consistente sem debates de estilo |
@@ -99,7 +100,7 @@ Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos 
 
 - **Views** — Páginas associadas a rotas (home, about)
 - **Components** — Componentes reutilizáveis (HelloWorld, WelcomeItem)
-- **Stores (Pinia)** — Gerenciamento de estado global (counter store de exemplo)
+- **Stores (Pinia)** — Gerenciamento de estado global com persistência automática (counter store de exemplo com `persist: true`)
 - **Router** — Navegação SPA com lazy-loading de rotas
 
 ---

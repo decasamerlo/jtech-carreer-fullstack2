@@ -50,6 +50,12 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
   - `npm run lint` — ESLint flat config (`eslint.config.ts`)
   - `npm run format` — Prettier (`src/` only, semi:false, singleQuote:true, printWidth:100)
 - **Path alias**: `@` → `./src`
+- **Pinia persistence**: `pinia-plugin-persistedstate@4.7.1` installed, registered in `src/main.ts`. Usage for setup stores:
+  ```ts
+  defineStore('id', () => { ... }, { persist: true })
+  // or granular config:
+  defineStore('id', () => { ... }, { persist: { storage: sessionStorage, pick: ['user'] } })
+  ```
 - **Test files**: located in `src/**/__tests__/` (inferred from `vitest.config.ts` exclude + eslint plugin pattern)
 - **ESLint**: `pluginVue.configs['flat/essential']` + `vueTsConfigs.recommended` + `pluginVitest` for `__tests__` files
 - **EditorConfig**: 2-space indent, lf, utf-8, final newline, printWidth 100
