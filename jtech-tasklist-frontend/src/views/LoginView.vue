@@ -59,6 +59,7 @@ function handleSubmit() {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  grid-column: 1 / -1;
 }
 
 .login-form {
