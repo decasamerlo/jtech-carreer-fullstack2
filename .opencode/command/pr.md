@@ -1,26 +1,48 @@
 ---
-description: Create PR with branch, commit, and push
+description: Create a pull request with full lifecycle
 ---
 
 <summary>
-You MUST orchestrate the full PR creation workflow: branch decision, commit, push, and PR creation.
+You MUST check for existing open PRs first, then walk through the complete PR lifecycle: branch decision, commit, push, and PR creation.
 You SHOULD load relevant skills and gather git context.
 You MUST ask for user approval at each stage before proceeding.
 </summary>
 
-<skill>
-caveman-commit
-</skill>
-
-<user_context>
-
-</user_context>
+<user_guidelines>
+$ARGUMENTS
+</user_guidelines>
 
 <objective>
-You MUST walk through the complete PR lifecycle: determine branch strategy, stage and commit changes, push, and create a pull request — asking for user approval at each decision point.
+You MUST orchestrate the full PR creation workflow: check for existing PRs, branch decision, commit, push, and PR creation — asking for user approval at each decision point.
 </objective>
 
 ## Workflow
+
+### 0. Existing PR Check
+
+Check if there is already an open PR for the current branch:
+
+```
+!git branch --show-current
+```
+
+```
+!gh pr list --head $(git branch --show-current) --state open --json number,title,url --limit 1
+```
+
+If an open PR exists, use the `question` tool to ask the user:
+
+- **Update existing PR** — push a new commit and optionally update the PR title/description
+- **Create new branch + PR** — create a new branch from the current one, commit, and open a fresh PR
+
+If **Update existing PR** is chosen:
+- Skip to step 3 (Commit Draft), then push, then ask for new title/description
+- Update the PR via `gh pr edit <number> --title "..." --body "..."`
+- Show the updated PR URL and stop
+
+If **Create new branch + PR** is chosen, continue to step 1.
+
+If no open PR exists, continue to step 1.
 
 ### 1. Environment Check
 
@@ -77,3 +99,40 @@ Draft a PR summary with:
 Show the draft to the user using the `question` tool with options to **approve** or **edit**. The tool already includes a free-form "Type your answer" field — if the user types their own version there, use it directly.
 
 If approved, create the PR via `gh pr create` and show the URL.
+
+## PR Body Template
+
+```markdown
+## Summary
+
+<1-3 sentence overview of what this PR does and why>
+
+## Changes
+
+### <Category 1>
+- Change 1
+- Change 2
+
+### <Category 2>
+- Change 1
+
+## Breaking Changes
+
+<List any breaking changes, or "None.">
+
+## Related Issues
+
+<Closes #X, Refs #Y, or "No related issues">
+```
+
+## Commit Message Style (caveman-commit)
+
+```
+<type>(<scope>): <imperative summary>
+
+<optional body — only when the "why" isn't obvious from the diff>
+
+Closes #X
+```
+
+Types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `chore`, `build`, `ci`, `style`, `revert`
