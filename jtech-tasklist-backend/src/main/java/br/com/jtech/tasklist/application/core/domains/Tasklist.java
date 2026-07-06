@@ -24,7 +24,7 @@ public class Tasklist extends BaseDomain<String> {
 
     public TasklistEntity toEntity() {
         return TasklistEntity.builder()
-            .id(UUID.fromString(getId()))
+            .id(getId() != null ? UUID.fromString(getId()) : UUID.randomUUID())
             .name(getName())
             .userId(userId != null ? UUID.fromString(userId) : null)
             .build();
