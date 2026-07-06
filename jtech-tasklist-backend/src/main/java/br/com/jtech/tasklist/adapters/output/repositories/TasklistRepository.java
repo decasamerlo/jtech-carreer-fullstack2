@@ -14,8 +14,12 @@ package br.com.jtech.tasklist.adapters.output.repositories;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 import br.com.jtech.tasklist.adapters.output.repositories.entities.TasklistEntity;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -25,5 +29,9 @@ import java.util.UUID;
 */
 @Repository
 public interface TasklistRepository extends JpaRepository<TasklistEntity, UUID> {
-    
+    List<TasklistEntity> findAllByUserId(UUID userId);
+    Optional<TasklistEntity> findByIdAndUserId(UUID id, UUID userId);
+    @Modifying
+    @Transactional
+    void deleteByIdAndUserId(UUID id, UUID userId);
 }

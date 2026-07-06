@@ -12,6 +12,7 @@
  */
 package br.com.jtech.tasklist.adapters.output.repositories.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -26,4 +27,10 @@ import java.util.UUID;
 @Entity
 @Table(name = "tasklist")
 public class TasklistEntity extends BaseEntity<UUID> {
+
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 }
