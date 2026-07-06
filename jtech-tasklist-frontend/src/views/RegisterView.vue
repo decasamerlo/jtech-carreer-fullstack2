@@ -84,7 +84,12 @@ async function handleSubmit() {
 
       <div class="field">
         <label for="confirmPassword">Confirm Password</label>
-        <input id="confirmPassword" v-model="confirmPassword" type="password" placeholder="Confirm your password" />
+        <input
+          id="confirmPassword"
+          v-model="confirmPassword"
+          type="password"
+          placeholder="Confirm your password"
+        />
         <p v-if="errors.confirmPassword" class="field-error">{{ errors.confirmPassword }}</p>
       </div>
 

@@ -58,6 +58,7 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
   // or granular config:
   defineStore('id', () => { ... }, { persist: { storage: sessionStorage, pick: ['user'] } })
   ```
+- **Lists feature**: Pinia store (`src/stores/lists.ts`) with CRUD operations, localStorage persistence, dialog components (Create, Rename, Delete), sidebar navigation, and `/lists` route with auth guard. Mock mode only — no backend integration yet.
 - **Test files**: located in `src/**/__tests__/` (inferred from `vitest.config.ts` exclude + eslint plugin pattern)
 - **ESLint**: `pluginVue.configs['flat/essential']` + `vueTsConfigs.recommended` + `pluginVitest` for `__tests__` files
 - **EditorConfig**: 2-space indent, lf, utf-8, final newline, printWidth 100

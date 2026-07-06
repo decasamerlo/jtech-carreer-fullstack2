@@ -5,8 +5,8 @@
 ### backend-tasks
 Implement CRUD /tasks/* with ownership validation. Apply Bean Validation on DTOs. Build Task domain, controller, repository. Depends on: backend-auth.
 
-### frontend-lists-crud
-Implement CRUD for lists with custom names, rename with validation, and delete with confirmation. Add navigation between lists. Persist store with pinia-persist. Depends on: frontend-auth, pinia-persist.
+### frontend-lists-backend-integration
+Integrate frontend lists CRUD with backend Tasklist API. Extend backend Tasklist entity with `name` field, add GET/PUT/DELETE endpoints, update frontend store to use API mode. Depends on: frontend-lists-crud, backend-tasks.
 
 ### frontend-tasks-crud
 Implement CRUD for tasks per list (add, edit, remove, mark completion). Prevent duplicates, validate required fields. Depends on: frontend-lists-crud.
@@ -48,3 +48,4 @@ Review and standardize error mapping across backend (exception handlers, HTTP st
 - frontend-auth
 - backend-auth
 - frontend-auth-config
+- frontend-lists-crud
