@@ -105,11 +105,8 @@ export const useListsStore = defineStore(
     async function apiCreateList(name: string): Promise<TaskList> {
       if (!auth.user) throw new Error('Cannot create list: not authenticated')
       validateName(name)
-      await apiCreateTasklist(name.trim())
-      await apiFetchLists()
-      const trimmed = name.trim()
-      const created = apiLists.value.find((l) => l.name === trimmed)
-      if (!created) throw new Error('Created list not found after refetch')
+      const created = await apiCreateTasklist(name.trim())
+      apiLists.value = [...apiLists.value, created]
       setActiveListForCurrentUser(created.id)
       return created
     }
@@ -135,8 +132,11 @@ export const useListsStore = defineStore(
     // --- Public API (branches on auth.mode) ---
 
     async function fetchLists(): Promise<void> {
-      if (auth.mode === 'api') await apiFetchLists()
-      // mock mode: lists already populated via persistence, no fetch needed
+      if (auth.mode === 'api') {
+        await apiFetchLists()
+      } else {
+        initialized.value = true
+      }
     }
 
     async function createList(name: string): Promise<TaskList> {

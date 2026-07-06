@@ -12,8 +12,8 @@ export async function fetchTasklists(): Promise<TaskList[]> {
 }
 
 export async function createTasklist(name: string): Promise<TaskList> {
-  await api.post('/api/v1/tasklists', { name })
-  return { id: '', name }
+  const { data } = await api.post<TasklistResponse>('/api/v1/tasklists', { name })
+  return { id: data.id, name: data.name }
 }
 
 export async function updateTasklist(id: string, name: string): Promise<TaskList> {

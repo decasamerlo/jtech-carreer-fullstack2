@@ -171,17 +171,13 @@ describe('Lists Store', () => {
       expect(store.initialized).toBe(true)
     })
 
-    it('creates a list via API then refetches', async () => {
-      vi.mocked(tasklistApi.createTasklist).mockResolvedValue({ id: '', name: 'New' })
-      vi.mocked(tasklistApi.fetchTasklists).mockResolvedValue([
-        { id: 'server-id', name: 'New' },
-      ])
+    it('creates a list via API using returned object', async () => {
+      vi.mocked(tasklistApi.createTasklist).mockResolvedValue({ id: 'server-id', name: 'New' })
 
       const store = useListsStore()
       const list = await store.createList('New')
 
       expect(tasklistApi.createTasklist).toHaveBeenCalledWith('New')
-      expect(tasklistApi.fetchTasklists).toHaveBeenCalled()
       expect(store.lists).toHaveLength(1)
       expect(list.id).toBe('server-id')
       expect(store.activeListId).toBe('server-id')
@@ -240,16 +236,18 @@ describe('Lists Store', () => {
     })
 
     it('sets active list after API create', async () => {
-      vi.mocked(tasklistApi.createTasklist).mockResolvedValue({ id: '', name: 'A' })
-      vi.mocked(tasklistApi.fetchTasklists).mockResolvedValue([
-        { id: 's1', name: 'A' },
-        { id: 's2', name: 'B' },
-      ])
+      vi.mocked(tasklistApi.createTasklist).mockResolvedValue({ id: 's1', name: 'A' })
 
       const store = useListsStore()
       await store.createList('A')
       expect(store.activeListId).toBe('s1')
       expect(store.activeList?.name).toBe('A')
+
+      vi.mocked(tasklistApi.fetchTasklists).mockResolvedValue([
+        { id: 's1', name: 'A' },
+        { id: 's2', name: 'B' },
+      ])
+      await store.fetchLists()
 
       store.setActiveList('s2')
       expect(store.activeListId).toBe('s2')

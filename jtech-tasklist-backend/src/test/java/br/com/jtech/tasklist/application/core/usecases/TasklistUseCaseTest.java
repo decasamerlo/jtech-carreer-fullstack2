@@ -94,7 +94,7 @@ class TasklistUseCaseTest {
 
         deleteTasklistsUseCase.delete(taskId.toString(), userId.toString());
 
-        verify(deleteTasklistOutputGateway).delete(taskId.toString());
+        verify(deleteTasklistOutputGateway).delete(taskId.toString(), userId);
     }
 
     @Test

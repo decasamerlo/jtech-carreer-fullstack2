@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
@@ -55,14 +56,14 @@ public class TasklistController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@Valid @RequestBody TasklistRequest request) {
+    public ResponseEntity<TasklistResponse> create(@Valid @RequestBody TasklistRequest request) {
         String userId = getCurrentUserId();
         Tasklist tasklist = Tasklist.builder()
                 .name(request.getName())
                 .userId(userId)
                 .build();
-        createTasklistInputGateway.create(tasklist);
-        return ResponseEntity.noContent().build();
+        Tasklist created = createTasklistInputGateway.create(tasklist);
+        return ResponseEntity.status(201).body(TasklistResponse.of(created));
     }
 
     @PutMapping("/{id}")

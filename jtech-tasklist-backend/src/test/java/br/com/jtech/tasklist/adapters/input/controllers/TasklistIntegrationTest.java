@@ -86,11 +86,9 @@ class TasklistIntegrationTest {
         String body = objectMapper.writeValueAsString(Map.of("name", name));
         HttpResponse<String> createResp = send("POST", "/api/v1/tasklists", body, token);
 
-        assertThat(createResp.statusCode()).isEqualTo(204);
-
-        HttpResponse<String> listResp = send("GET", "/api/v1/tasklists", null, token);
-        List<Map<String, Object>> lists = objectMapper.readValue(listResp.body(), new TypeReference<>() {});
-        return (String) lists.get(0).get("id");
+        assertThat(createResp.statusCode()).isEqualTo(201);
+        Map<String, Object> created = objectMapper.readValue(createResp.body(), new TypeReference<>() {});
+        return (String) created.get("id");
     }
 
     @SuppressWarnings("unchecked")
@@ -100,10 +98,13 @@ class TasklistIntegrationTest {
     }
 
     @Test
-    void create_ShouldReturn204_WhenValidRequest() throws Exception {
+    void create_ShouldReturn201_WhenValidRequest() throws Exception {
         String body = objectMapper.writeValueAsString(Map.of("name", "My Tasklist"));
         HttpResponse<String> response = send("POST", "/api/v1/tasklists", body, user1Token);
-        assertThat(response.statusCode()).isEqualTo(204);
+        assertThat(response.statusCode()).isEqualTo(201);
+        Map<String, Object> responseBody = objectMapper.readValue(response.body(), new TypeReference<>() {});
+        assertThat(responseBody.get("name")).isEqualTo("My Tasklist");
+        assertThat(responseBody.get("id")).isNotNull();
     }
 
     @Test

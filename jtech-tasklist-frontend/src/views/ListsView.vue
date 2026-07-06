@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useListsStore } from '@/stores/lists'
 import { useAuthStore } from '@/stores/auth'
@@ -7,6 +8,10 @@ import TaskListSidebar from '@/components/TaskListSidebar.vue'
 const router = useRouter()
 const store = useListsStore()
 const auth = useAuthStore()
+
+onMounted(() => {
+  store.fetchLists()
+})
 
 function handleLogout() {
   auth.logout()
@@ -22,7 +27,10 @@ function handleLogout() {
         <router-link :to="{ name: 'home' }" class="back-link">← Home</router-link>
         <button class="sign-out-btn" @click="handleLogout">Sign Out</button>
       </header>
-      <div v-if="store.activeList" class="list-content">
+      <div v-if="!store.initialized" class="loading-state">
+        <p>Loading...</p>
+      </div>
+      <div v-else-if="store.activeList" class="list-content">
         <h1>{{ store.activeList.name }}</h1>
         <p class="list-meta">
           Created: {{ store.activeList.createdAt ? new Date(store.activeList.createdAt).toLocaleDateString() : '—' }}
@@ -94,5 +102,14 @@ function handleLogout() {
 
 .empty-state h2 {
   margin-bottom: 0.5rem;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #888;
 }
 </style>

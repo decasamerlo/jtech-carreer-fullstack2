@@ -6,7 +6,6 @@ import br.com.jtech.tasklist.application.ports.output.DeleteTasklistOutputGatewa
 import br.com.jtech.tasklist.application.ports.output.GetTasklistsOutputGateway;
 import br.com.jtech.tasklist.application.ports.output.UpdateTasklistOutputGateway;
 import br.com.jtech.tasklist.adapters.output.repositories.TasklistRepository;
-import br.com.jtech.tasklist.adapters.output.repositories.entities.TasklistEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,36 +21,36 @@ public class TasklistAdapter implements CreateTasklistOutputGateway,
 
     @Override
     public Tasklist create(Tasklist tasklist) {
-        TasklistEntity entity = tasklist.toEntity();
-        TasklistEntity saved = repository.save(entity);
-        return Tasklist.of(saved);
+        var entity = TasklistMapper.toEntity(tasklist);
+        var saved = repository.save(entity);
+        return TasklistMapper.toDomain(saved);
     }
 
     @Override
     public List<Tasklist> findAllByUserId(UUID userId) {
         return repository.findAllByUserId(userId).stream()
-                .map(Tasklist::of)
+                .map(TasklistMapper::toDomain)
                 .toList();
     }
 
     @Override
     public Tasklist findByIdAndUserId(UUID id, UUID userId) {
         return repository.findByIdAndUserId(id, userId)
-                .map(Tasklist::of)
+                .map(TasklistMapper::toDomain)
                 .orElse(null);
     }
 
     @Override
     public Tasklist update(Tasklist tasklist, UUID userId) {
-        TasklistEntity existing = repository.findByIdAndUserId(UUID.fromString(tasklist.getId()), userId)
+        var existing = repository.findByIdAndUserId(UUID.fromString(tasklist.getId()), userId)
                 .orElseThrow(() -> new IllegalArgumentException("Tasklist not found"));
         existing.setName(tasklist.getName());
-        TasklistEntity saved = repository.save(existing);
-        return Tasklist.of(saved);
+        var saved = repository.save(existing);
+        return TasklistMapper.toDomain(saved);
     }
 
     @Override
-    public void delete(String id) {
-        repository.deleteById(UUID.fromString(id));
+    public void delete(String id, UUID userId) {
+        repository.deleteByIdAndUserId(UUID.fromString(id), userId);
     }
 }

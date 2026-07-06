@@ -46,14 +46,16 @@ describe('tasklistApi', () => {
   })
 
   describe('createTasklist', () => {
-    it('POSTs to /api/v1/tasklists with name', async () => {
+    it('POSTs to /api/v1/tasklists with name and returns created object', async () => {
       const mockPost = vi.mocked(api.post)
-      mockPost.mockResolvedValueOnce({ status: 204 })
+      mockPost.mockResolvedValueOnce({
+        data: { id: 'new-id', name: 'Groceries' },
+      })
 
       const result = await createTasklist('Groceries')
 
       expect(mockPost).toHaveBeenCalledWith('/api/v1/tasklists', { name: 'Groceries' })
-      expect(result.name).toBe('Groceries')
+      expect(result).toEqual({ id: 'new-id', name: 'Groceries' })
     })
   })
 
