@@ -9,13 +9,13 @@ describe('LoginView', () => {
     setActivePinia(createPinia())
   })
 
-const registerRoute = {
-  path: '/register',
-  name: 'register',
-  component: { template: '<div>Register</div>' },
-}
+  const registerRoute = {
+    path: '/register',
+    name: 'register',
+    component: { template: '<div>Register</div>' },
+  }
 
-const baseRoutes = [registerRoute]
+  const baseRoutes = [registerRoute]
 
   it('renders email and password fields', () => {
     const wrapper = mount(LoginView, {

@@ -97,7 +97,9 @@ describe('api interceptor', () => {
     auth.refreshToken = 'bad-refresh'
 
     const originalRefreshFn = (api as unknown as ApiWithRefreshFn).refreshFn
-    ;(api as unknown as ApiWithRefreshFn).refreshFn = vi.fn().mockRejectedValue({ response: { status: 401 } })
+    ;(api as unknown as ApiWithRefreshFn).refreshFn = vi
+      .fn()
+      .mockRejectedValue({ response: { status: 401 } })
 
     const originalRequest = {
       _retry: false,

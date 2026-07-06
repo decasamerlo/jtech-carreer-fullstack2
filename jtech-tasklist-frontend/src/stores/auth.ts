@@ -30,9 +30,7 @@ export const useAuthStore = defineStore(
     const accessToken = ref<string | null>(null)
     const refreshToken = ref<string | null>(null)
 
-    const mode = ref<'mock' | 'api'>(
-      import.meta.env.VITE_AUTH_MODE === 'api' ? 'api' : 'mock',
-    )
+    const mode = ref<'mock' | 'api'>(import.meta.env.VITE_AUTH_MODE === 'api' ? 'api' : 'mock')
 
     const isAuthenticated = computed(() => user.value !== null)
 

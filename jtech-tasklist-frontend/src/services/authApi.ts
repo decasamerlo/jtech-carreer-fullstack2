@@ -6,10 +6,7 @@ export interface AuthApiResponse {
   tokenType: string
 }
 
-export async function loginApi(
-  email: string,
-  password: string,
-): Promise<AuthApiResponse> {
+export async function loginApi(email: string, password: string): Promise<AuthApiResponse> {
   const { data } = await api.post<AuthApiResponse>('/api/v1/auth/login', {
     email,
     password,

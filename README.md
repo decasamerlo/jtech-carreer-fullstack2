@@ -102,10 +102,10 @@ Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos 
 
 ### Frontend: Arquitetura Reativa com Composição
 
-- **Views** — Páginas associadas a rotas (home, about)
-- **Components** — Componentes reutilizáveis (HelloWorld, WelcomeItem)
-- **Stores (Pinia)** — Gerenciamento de estado global com persistência automática (counter store de exemplo com `persist: true`)
-- **Router** — Navegação SPA com lazy-loading de rotas
+- **Views** — Páginas associadas a rotas (home, about, lists)
+- **Components** — Componentes reutilizáveis (dialogos de criação/renomeação/exclusão de listas, sidebar de navegação)
+- **Stores (Pinia)** — Gerenciamento de estado global com persistência automática (auth store com tokens, lists store com CRUD)
+- **Router** — Navegação SPA com lazy-loading de rotas e guards de autenticação
 
 ---
 
@@ -295,7 +295,7 @@ Projeto partiu de um skeleton mínimo.
 ### Implementado
 
 - **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator, **autenticação JWT com refresh token** (registro, login, refresh), CORS config
-- **Frontend**: Vue 3 + Vite + Pinia + Vue Router + ESLint + Vitest (scaffold padrão), **autenticação com flag mock/api** (login e registro assíncronos com axios), tela de cadastro
+- **Frontend**: Vue 3 + Vite + Pinia + Vue Router + ESLint + Vitest (scaffold padrão), **autenticação com flag mock/api** (login e registro assíncronos com axios), tela de cadastro, **CRUD de listas com persistência** (criar, renomear, excluir com confirmação, navegação entre listas, sidebar)
 
 ### Próximos passos
 

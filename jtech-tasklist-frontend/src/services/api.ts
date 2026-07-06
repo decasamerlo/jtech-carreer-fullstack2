@@ -26,14 +26,12 @@ let pendingRequests: Array<{
 }> = []
 
 // default implementation — test can override via (api as unknown as ApiWithRefreshFn).refreshFn = vi.fn()
-;(api as unknown as { refreshFn: (refreshToken: string) => Promise<RefreshTokenResponse> }).refreshFn =
-  async (refreshToken: string) => {
-    const { data } = await axios.post(
-      `${api.defaults.baseURL}/api/v1/auth/refresh`,
-      { refreshToken },
-    )
-    return data as RefreshTokenResponse
-  }
+;(
+  api as unknown as { refreshFn: (refreshToken: string) => Promise<RefreshTokenResponse> }
+).refreshFn = async (refreshToken: string) => {
+  const { data } = await axios.post(`${api.defaults.baseURL}/api/v1/auth/refresh`, { refreshToken })
+  return data as RefreshTokenResponse
+}
 
 api.interceptors.response.use(
   (response) => response,
