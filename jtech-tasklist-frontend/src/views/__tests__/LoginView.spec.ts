@@ -9,18 +9,26 @@ describe('LoginView', () => {
     setActivePinia(createPinia())
   })
 
-  it('renders username and password fields', () => {
+const registerRoute = {
+  path: '/register',
+  name: 'register',
+  component: { template: '<div>Register</div>' },
+}
+
+const baseRoutes = [registerRoute]
+
+  it('renders email and password fields', () => {
     const wrapper = mount(LoginView, {
       global: {
         plugins: [
           createRouter({
             history: createWebHistory(),
-            routes: [],
+            routes: baseRoutes,
           }),
         ],
       },
     })
-    expect(wrapper.find('input[type="text"]').exists()).toBe(true)
+    expect(wrapper.find('input[type="email"]').exists()).toBe(true)
     expect(wrapper.find('input[type="password"]').exists()).toBe(true)
     expect(wrapper.find('button[type="submit"]').exists()).toBe(true)
   })
@@ -31,13 +39,13 @@ describe('LoginView', () => {
         plugins: [
           createRouter({
             history: createWebHistory(),
-            routes: [],
+            routes: baseRoutes,
           }),
         ],
       },
     })
     await wrapper.find('form').trigger('submit.prevent')
-    expect(wrapper.text()).toContain('Username is required')
+    expect(wrapper.text()).toContain('Email is required')
     expect(wrapper.text()).toContain('Password is required')
   })
 
@@ -45,6 +53,7 @@ describe('LoginView', () => {
     const router = createRouter({
       history: createWebHistory(),
       routes: [
+        ...baseRoutes,
         {
           path: '/',
           name: 'home',
@@ -53,18 +62,45 @@ describe('LoginView', () => {
       ],
     })
     const pushSpy = vi.spyOn(router, 'push')
-    const auth = (await import('@/stores/auth')).useAuthStore()
 
     const wrapper = mount(LoginView, {
       global: {
         plugins: [router],
       },
     })
-    await wrapper.find('input[type="text"]').setValue('john')
+    await wrapper.find('input[type="email"]').setValue('john@example.com')
     await wrapper.find('input[type="password"]').setValue('secret')
     await wrapper.find('form').trigger('submit.prevent')
 
-    expect(auth.user?.username).toBe('john')
+    const auth = (await import('@/stores/auth')).useAuthStore()
+    expect(auth.user?.email).toBe('john@example.com')
     expect(pushSpy).toHaveBeenCalledWith({ name: 'home' })
+  })
+
+  it('shows error message when login fails', async () => {
+    const router = createRouter({
+      history: createWebHistory(),
+      routes: [
+        ...baseRoutes,
+        {
+          path: '/',
+          name: 'home',
+          component: { template: '<div>Home</div>' },
+        },
+      ],
+    })
+    const auth = (await import('@/stores/auth')).useAuthStore()
+    vi.spyOn(auth, 'login').mockRejectedValue(new Error('Invalid credentials'))
+
+    const wrapper = mount(LoginView, {
+      global: {
+        plugins: [router],
+      },
+    })
+    await wrapper.find('input[type="email"]').setValue('john@example.com')
+    await wrapper.find('input[type="password"]').setValue('wrong')
+    await wrapper.find('form').trigger('submit.prevent')
+
+    expect(wrapper.text()).toContain('Invalid credentials')
   })
 })

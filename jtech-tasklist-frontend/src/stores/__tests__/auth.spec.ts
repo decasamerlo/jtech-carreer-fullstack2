@@ -1,10 +1,18 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useAuthStore } from '../auth'
+
+vi.mock('@/services/authApi', () => ({
+  loginApi: vi.fn(),
+  registerApi: vi.fn(),
+}))
 
 describe('auth store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(import.meta.env as any).VITE_AUTH_MODE = 'mock'
   })
 
   it('starts with null user', () => {
@@ -17,21 +25,35 @@ describe('auth store', () => {
     expect(store.isAuthenticated).toBe(false)
   })
 
-  it('login sets user with derived email', () => {
+  it('login in mock mode sets user with name and email', async () => {
     const store = useAuthStore()
-    store.login('john', 'secret')
+    await store.login('john@example.com', 'secret')
     expect(store.user).toEqual({
-      username: 'john',
+      name: 'john',
       email: 'john@example.com',
+      role: 'ROLE_USER',
     })
     expect(store.isAuthenticated).toBe(true)
   })
 
-  it('logout clears user', () => {
+  it('register in mock mode sets user', async () => {
     const store = useAuthStore()
-    store.login('john', 'secret')
+    await store.register('John Doe', 'john@example.com', 'secret')
+    expect(store.user).toEqual({
+      name: 'John Doe',
+      email: 'john@example.com',
+      role: 'ROLE_USER',
+    })
+    expect(store.isAuthenticated).toBe(true)
+  })
+
+  it('logout clears user and tokens', () => {
+    const store = useAuthStore()
+    store.login('john@example.com', 'secret')
     store.logout()
     expect(store.user).toBeNull()
+    expect(store.accessToken).toBeNull()
+    expect(store.refreshToken).toBeNull()
     expect(store.isAuthenticated).toBe(false)
   })
 })

@@ -6,20 +6,35 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const auth = useAuthStore()
 
+const name = ref('')
 const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const loading = ref(false)
 const error = ref<string | null>(null)
-const errors = ref<{ email?: string; password?: string }>({})
+const errors = ref<{
+  name?: string
+  email?: string
+  password?: string
+  confirmPassword?: string
+}>({})
 
 function validate(): boolean {
   errors.value = {}
 
+  if (!name.value.trim()) {
+    errors.value.name = 'Name is required'
+  }
   if (!email.value.trim()) {
     errors.value.email = 'Email is required'
   }
   if (!password.value.trim()) {
     errors.value.password = 'Password is required'
+  } else if (password.value.length < 6) {
+    errors.value.password = 'Password must be at least 6 characters'
+  }
+  if (password.value !== confirmPassword.value) {
+    errors.value.confirmPassword = 'Passwords do not match'
   }
 
   return Object.keys(errors.value).length === 0
@@ -32,10 +47,10 @@ async function handleSubmit() {
   error.value = null
 
   try {
-    await auth.login(email.value.trim(), password.value)
+    await auth.register(name.value.trim(), email.value.trim(), password.value)
     router.push({ name: 'home' })
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Login failed'
+    error.value = e instanceof Error ? e.message : 'Registration failed'
   } finally {
     loading.value = false
   }
@@ -43,11 +58,17 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="login-container">
-    <form class="login-form" @submit.prevent="handleSubmit">
-      <h1>Sign In</h1>
+  <div class="register-container">
+    <form class="register-form" @submit.prevent="handleSubmit">
+      <h1>Create Account</h1>
 
       <p v-if="error" class="error-message">{{ error }}</p>
+
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" v-model="name" type="text" placeholder="Enter your name" />
+        <p v-if="errors.name" class="field-error">{{ errors.name }}</p>
+      </div>
 
       <div class="field">
         <label for="email">Email</label>
@@ -61,20 +82,26 @@ async function handleSubmit() {
         <p v-if="errors.password" class="field-error">{{ errors.password }}</p>
       </div>
 
+      <div class="field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input id="confirmPassword" v-model="confirmPassword" type="password" placeholder="Confirm your password" />
+        <p v-if="errors.confirmPassword" class="field-error">{{ errors.confirmPassword }}</p>
+      </div>
+
       <button type="submit" :disabled="loading">
-        {{ loading ? 'Signing in...' : 'Sign In' }}
+        {{ loading ? 'Creating account...' : 'Create Account' }}
       </button>
 
-      <p class="register-link">
-        Don't have an account?
-        <router-link :to="{ name: 'register' }">Register</router-link>
+      <p class="login-link">
+        Already have an account?
+        <router-link :to="{ name: 'login' }">Sign In</router-link>
       </p>
     </form>
   </div>
 </template>
 
 <style scoped>
-.login-container {
+.register-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -82,7 +109,7 @@ async function handleSubmit() {
   grid-column: 1 / -1;
 }
 
-.login-form {
+.register-form {
   width: 100%;
   max-width: 400px;
   padding: 2rem;
@@ -90,9 +117,18 @@ async function handleSubmit() {
   border-radius: 8px;
 }
 
-.login-form h1 {
+.register-form h1 {
   margin-bottom: 1.5rem;
   text-align: center;
+}
+
+.error-message {
+  color: #e74c3c;
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: #fdf0ef;
+  border-radius: 4px;
 }
 
 .field {
@@ -113,7 +149,7 @@ async function handleSubmit() {
   font-size: 1rem;
 }
 
-.field .error {
+.field-error {
   color: #e74c3c;
   font-size: 0.85rem;
   margin-top: 0.25rem;
@@ -132,5 +168,16 @@ button[type='submit'] {
 
 button[type='submit']:hover {
   background-color: hsla(160, 100%, 30%, 1);
+}
+
+button[type='submit']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
 }
 </style>

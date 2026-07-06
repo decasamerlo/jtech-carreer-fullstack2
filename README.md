@@ -39,6 +39,7 @@ Sistema TODO List multi-usuário com arquitetura hexagonal no backend e componen
 | **Vitest** | 4.1.9 | Testes unitários compatíveis com ecossistema Vite |
 | **ESLint** | 10.6.0 | Análise estática com regras específicas para Vue e TypeScript |
 | **Prettier** | 3.9.4 | Formatação consistente sem debates de estilo |
+| **Axios** | — | Cliente HTTP com interceptores para token JWT e tratamento de erros |
 
 ---
 
@@ -219,6 +220,21 @@ npm run dev
 
 Acessar: http://localhost:5173
 
+### Rodando Tudo de Uma Vez
+
+```bash
+./misc/scripts/dev.sh
+```
+
+Inicia backend (porta 8080) e frontend (porta 5173) simultaneamente. Ctrl+C para parar ambos.
+
+**Variáveis de ambiente relevantes:**
+
+| Variável | Padrão | Descrição |
+|---|---|---|
+| `VITE_AUTH_MODE` | `mock` | Modo de autenticação: `mock` (simulado, sem backend) ou `api` (real, com backend) |
+| `VITE_API_BASE_URL` | `http://localhost:8080` | URL base do backend para chamadas API |
+
 ---
 
 ## Como Rodar os Testes
@@ -278,8 +294,8 @@ Projeto partiu de um skeleton mínimo.
 
 ### Implementado
 
-- **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator, **autenticação JWT com refresh token** (registro, login, refresh)
-- **Frontend**: Vue 3 + Vite + Pinia + Vue Router + ESLint + Vitest (scaffold padrão)
+- **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator, **autenticação JWT com refresh token** (registro, login, refresh), CORS config
+- **Frontend**: Vue 3 + Vite + Pinia + Vue Router + ESLint + Vitest (scaffold padrão), **autenticação com flag mock/api** (login e registro assíncronos com axios), tela de cadastro
 
 ### Próximos passos
 

@@ -13,7 +13,7 @@ function handleLogout() {
 
 <template>
   <main>
-    <h1>Welcome, {{ auth.user?.username }}!</h1>
+    <h1>Welcome, {{ auth.user?.name }}!</h1>
     <p>You are signed in as {{ auth.user?.email }}</p>
     <button @click="handleLogout">Sign Out</button>
   </main>
@@ -26,6 +26,7 @@ main {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  grid-column: 1 / -1;
 }
 
 button {
