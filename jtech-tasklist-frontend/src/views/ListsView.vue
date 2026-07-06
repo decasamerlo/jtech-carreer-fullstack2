@@ -25,7 +25,7 @@ function handleLogout() {
       <div v-if="store.activeList" class="list-content">
         <h1>{{ store.activeList.name }}</h1>
         <p class="list-meta">
-          Created: {{ new Date(store.activeList.createdAt).toLocaleDateString() }}
+          Created: {{ store.activeList.createdAt ? new Date(store.activeList.createdAt).toLocaleDateString() : '—' }}
         </p>
       </div>
       <div v-else class="empty-state">
