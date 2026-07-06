@@ -26,9 +26,6 @@ public class DeleteTasklistUseCase implements DeleteTasklistInputGateway {
         if (existing == null) {
             throw new IllegalArgumentException("Tasklist not found or access denied");
         }
-        if (!existing.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("Not authorized to delete this tasklist");
-        }
         deleteTasklistOutputGateway.delete(id);
     }
 }

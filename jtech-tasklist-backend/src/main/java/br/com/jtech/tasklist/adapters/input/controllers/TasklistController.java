@@ -20,6 +20,7 @@ import br.com.jtech.tasklist.application.ports.input.CreateTasklistInputGateway;
 import br.com.jtech.tasklist.application.ports.input.DeleteTasklistInputGateway;
 import br.com.jtech.tasklist.application.ports.input.GetTasklistsInputGateway;
 import br.com.jtech.tasklist.application.ports.input.UpdateTasklistInputGateway;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -54,7 +55,7 @@ public class TasklistController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody TasklistRequest request) {
+    public ResponseEntity<Void> create(@Valid @RequestBody TasklistRequest request) {
         String userId = getCurrentUserId();
         Tasklist tasklist = Tasklist.builder()
                 .name(request.getName())
@@ -66,7 +67,7 @@ public class TasklistController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TasklistResponse> update(@PathVariable String id,
-                                                   @RequestBody TasklistRequest request) {
+                                                   @Valid @RequestBody TasklistRequest request) {
         String userId = getCurrentUserId();
         Tasklist tasklist = Tasklist.builder()
                 .id(id)

@@ -24,9 +24,6 @@ public class UpdateTasklistUseCase implements UpdateTasklistInputGateway {
         if (existing == null) {
             throw new IllegalArgumentException("Tasklist not found or access denied");
         }
-        if (!existing.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("Not authorized to update this tasklist");
-        }
         return updateTasklistOutputGateway.update(tasklist, java.util.UUID.fromString(currentUserId));
     }
 }
