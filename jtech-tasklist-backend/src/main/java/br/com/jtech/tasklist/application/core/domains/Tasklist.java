@@ -15,6 +15,9 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Tasklist extends BaseDomain<String> {
 
+    private String name;
+    private String userId;
+
     public static List<Tasklist> of(List<TasklistEntity> entities) {
         return entities.stream().map(Tasklist::of).toList();
     }
@@ -22,18 +25,23 @@ public class Tasklist extends BaseDomain<String> {
     public TasklistEntity toEntity() {
         return TasklistEntity.builder()
             .id(UUID.fromString(getId()))
+            .name(getName())
+            .userId(userId != null ? UUID.fromString(userId) : null)
             .build();
     }
 
     public static Tasklist of(TasklistEntity entity) {
         return Tasklist.builder()
             .id(entity.getId().toString())
+            .name(entity.getName())
+            .userId(entity.getUserId() != null ? entity.getUserId().toString() : null)
             .build();
     }
 
     public static Tasklist of(TasklistRequest request) {
         return Tasklist.builder()
             .id(request.getId())
+            .name(request.getName())
             .build();
     }
 }

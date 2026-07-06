@@ -38,11 +38,13 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TasklistResponse implements Serializable {
     private String id;
+    private String name;
     List<TasklistResponse> responses;
 
     public static TasklistResponse of(Tasklist tasklist) {
         return TasklistResponse.builder()
                 .id(tasklist.getId())
+                .name(tasklist.getName())
                 .build();
     }
 
