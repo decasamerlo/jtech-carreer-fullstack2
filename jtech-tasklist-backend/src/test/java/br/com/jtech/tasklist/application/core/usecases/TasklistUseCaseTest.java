@@ -16,6 +16,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,12 +63,12 @@ class TasklistUseCaseTest {
         Tasklist updated = Tasklist.builder().id(taskId.toString()).name("New").userId(userId.toString()).build();
 
         when(getTasklistsOutputGateway.findByIdAndUserId(taskId, userId)).thenReturn(existing);
-        when(updateTasklistOutputGateway.update(any(Tasklist.class))).thenReturn(updated);
+        when(updateTasklistOutputGateway.update(any(Tasklist.class), eq(userId))).thenReturn(updated);
 
         Tasklist result = updateTasklistsUseCase.update(incoming, userId.toString());
 
         assertThat(result.getName()).isEqualTo("New");
-        verify(updateTasklistOutputGateway).update(incoming);
+        verify(updateTasklistOutputGateway).update(incoming, userId);
     }
 
     @Test

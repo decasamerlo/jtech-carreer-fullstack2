@@ -1,3 +1,5 @@
+-- NOTE: user_id is NOT NULL without a DEFAULT. This migration assumes the tasklist
+-- table is empty (dev/fresh database). If existing rows exist, backfill user_id first.
 ALTER TABLE tasklist
     ADD COLUMN name VARCHAR(100) NOT NULL DEFAULT 'Unnamed List',
     ADD COLUMN user_id UUID NOT NULL,

@@ -42,13 +42,10 @@ public class TasklistAdapter implements CreateTasklistOutputGateway,
     }
 
     @Override
-    public Tasklist update(Tasklist tasklist) {
-        TasklistEntity existing = repository.findById(UUID.fromString(tasklist.getId()))
+    public Tasklist update(Tasklist tasklist, UUID userId) {
+        TasklistEntity existing = repository.findByIdAndUserId(UUID.fromString(tasklist.getId()), userId)
                 .orElseThrow(() -> new IllegalArgumentException("Tasklist not found"));
         existing.setName(tasklist.getName());
-        if (tasklist.getUserId() != null) {
-            existing.setUserId(UUID.fromString(tasklist.getUserId()));
-        }
         TasklistEntity saved = repository.save(existing);
         return Tasklist.of(saved);
     }
