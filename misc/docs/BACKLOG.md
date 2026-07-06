@@ -5,8 +5,8 @@
 ### backend-tasks
 Implement CRUD /tasks/* with ownership validation. Apply Bean Validation on DTOs. Build Task domain, controller, repository. Depends on: backend-auth.
 
-### frontend-lists-backend-integration
-Integrate frontend lists CRUD with backend Tasklist API. Extend backend Tasklist entity with `name` field, add GET/PUT/DELETE endpoints, update frontend store to use API mode. Depends on: frontend-lists-crud, backend-tasks.
+### frontend-error-handling
+Add toast/snackbar notifications for API errors in frontend. Handle HTTP error responses gracefully with user-facing messages (e.g., network errors, 4xx/5xx). Depends on: frontend-lists-backend-integration.
 
 ### frontend-tasks-crud
 Implement CRUD for tasks per list (add, edit, remove, mark completion). Prevent duplicates, validate required fields. Depends on: frontend-lists-crud.
@@ -49,3 +49,4 @@ Review and standardize error mapping across backend (exception handlers, HTTP st
 - backend-auth
 - frontend-auth-config
 - frontend-lists-crud
+- frontend-lists-backend-integration
