@@ -67,8 +67,8 @@ describe('api interceptor', () => {
     auth.accessToken = 'expired-token'
     auth.refreshToken = 'refresh-token'
 
-    const originalRefreshFn = (api as ApiWithRefreshFn).refreshFn
-    ;(api as ApiWithRefreshFn).refreshFn = vi.fn().mockResolvedValue({
+    const originalRefreshFn = (api as unknown as ApiWithRefreshFn).refreshFn
+    ;(api as unknown as ApiWithRefreshFn).refreshFn = vi.fn().mockResolvedValue({
       accessToken: 'new-access',
       refreshToken: 'new-refresh',
     })
@@ -84,11 +84,11 @@ describe('api interceptor', () => {
     // refresh + token update succeeds; the retry XHR fails in jsdom — that's expected
     await handler(error).catch(() => {})
 
-    expect((api as ApiWithRefreshFn).refreshFn).toHaveBeenCalledWith('refresh-token')
+    expect((api as unknown as ApiWithRefreshFn).refreshFn).toHaveBeenCalledWith('refresh-token')
     expect(auth.accessToken).toBe('new-access')
     expect(auth.refreshToken).toBe('new-refresh')
 
-    ;(api as ApiWithRefreshFn).refreshFn = originalRefreshFn
+    ;(api as unknown as ApiWithRefreshFn).refreshFn = originalRefreshFn
   })
 
   it('logs out on failed refresh', async () => {
@@ -96,8 +96,8 @@ describe('api interceptor', () => {
     auth.accessToken = 'expired-token'
     auth.refreshToken = 'bad-refresh'
 
-    const originalRefreshFn = (api as ApiWithRefreshFn).refreshFn
-    ;(api as ApiWithRefreshFn).refreshFn = vi.fn().mockRejectedValue({ response: { status: 401 } })
+    const originalRefreshFn = (api as unknown as ApiWithRefreshFn).refreshFn
+    ;(api as unknown as ApiWithRefreshFn).refreshFn = vi.fn().mockRejectedValue({ response: { status: 401 } })
 
     const originalRequest = {
       _retry: false,
@@ -112,7 +112,7 @@ describe('api interceptor', () => {
     expect(auth.accessToken).toBeNull()
     expect(auth.refreshToken).toBeNull()
 
-    ;(api as ApiWithRefreshFn).refreshFn = originalRefreshFn
+    ;(api as unknown as ApiWithRefreshFn).refreshFn = originalRefreshFn
   })
 
   it('queues concurrent 401s and resolves both after single refresh', async () => {
@@ -125,8 +125,8 @@ describe('api interceptor', () => {
       refreshResolve = resolve
     })
 
-    const originalRefreshFn = (api as ApiWithRefreshFn).refreshFn
-    ;(api as ApiWithRefreshFn).refreshFn = vi.fn().mockReturnValue(refreshPromise)
+    const originalRefreshFn = (api as unknown as ApiWithRefreshFn).refreshFn
+    ;(api as unknown as ApiWithRefreshFn).refreshFn = vi.fn().mockReturnValue(refreshPromise)
 
     const handler = api.interceptors.response.handlers![0].rejected!
 
@@ -153,8 +153,8 @@ describe('api interceptor', () => {
     expect(reqB._retry).toBe(true)
 
     // Only one refresh call should have been made
-    expect((api as ApiWithRefreshFn).refreshFn).toHaveBeenCalledTimes(1)
-    expect((api as ApiWithRefreshFn).refreshFn).toHaveBeenCalledWith('refresh-token')
+    expect((api as unknown as ApiWithRefreshFn).refreshFn).toHaveBeenCalledTimes(1)
+    expect((api as unknown as ApiWithRefreshFn).refreshFn).toHaveBeenCalledWith('refresh-token')
 
     // Resolve the refresh — both queued requests should resolve
     refreshResolve({ accessToken: 'new-access', refreshToken: 'new-refresh' })
@@ -163,6 +163,6 @@ describe('api interceptor', () => {
     expect(auth.accessToken).toBe('new-access')
     expect(auth.refreshToken).toBe('new-refresh')
 
-    ;(api as ApiWithRefreshFn).refreshFn = originalRefreshFn
+    ;(api as unknown as ApiWithRefreshFn).refreshFn = originalRefreshFn
   })
 })

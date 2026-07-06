@@ -25,7 +25,7 @@ let pendingRequests: Array<{
   reject: (error: unknown) => void
 }> = []
 
-// default implementation — test can override via (api as any).refreshFn = vi.fn()
+// default implementation — test can override via (api as unknown as ApiWithRefreshFn).refreshFn = vi.fn()
 ;(api as unknown as { refreshFn: (refreshToken: string) => Promise<RefreshTokenResponse> }).refreshFn =
   async (refreshToken: string) => {
     const { data } = await axios.post(
