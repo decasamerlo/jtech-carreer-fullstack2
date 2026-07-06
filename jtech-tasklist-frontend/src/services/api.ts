@@ -1,6 +1,11 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
+interface RefreshTokenResponse {
+  accessToken: string
+  refreshToken: string
+}
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
 })
@@ -21,13 +26,14 @@ let pendingRequests: Array<{
 }> = []
 
 // default implementation — test can override via (api as any).refreshFn = vi.fn()
-;(api as any).refreshFn = async (refreshToken: string) => {
-  const { data } = await axios.post(
-    `${api.defaults.baseURL}/api/v1/auth/refresh`,
-    { refreshToken },
-  )
-  return data as { accessToken: string; refreshToken: string }
-}
+;(api as unknown as { refreshFn: (refreshToken: string) => Promise<RefreshTokenResponse> }).refreshFn =
+  async (refreshToken: string) => {
+    const { data } = await axios.post(
+      `${api.defaults.baseURL}/api/v1/auth/refresh`,
+      { refreshToken },
+    )
+    return data as RefreshTokenResponse
+  }
 
 api.interceptors.response.use(
   (response) => response,
@@ -58,7 +64,9 @@ api.interceptors.response.use(
     isRefreshing = true
 
     try {
-      const data = await (api as any).refreshFn(auth.refreshToken)
+      const data = await (
+        api as unknown as { refreshFn: (refreshToken: string) => Promise<RefreshTokenResponse> }
+      ).refreshFn(auth.refreshToken)
 
       auth.accessToken = data.accessToken
       auth.refreshToken = data.refreshToken
