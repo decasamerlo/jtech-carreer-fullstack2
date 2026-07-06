@@ -3,6 +3,8 @@ import { useAuthStore } from '@/stores/auth'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 
+const publicRoutes = ['login', 'register']
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -10,6 +12,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegisterView.vue'),
     },
     {
       path: '/',
@@ -33,7 +40,7 @@ export function authGuard(to: RouteLocationNormalized) {
     return { name: 'login' }
   }
 
-  if (to.name === 'login' && auth.isAuthenticated) {
+  if (publicRoutes.includes(to.name as string) && auth.isAuthenticated) {
     return { name: 'home' }
   }
 }

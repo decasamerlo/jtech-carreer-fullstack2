@@ -15,7 +15,7 @@ public class JwtTokenAdapter implements TokenOutputGateway {
     @Override
     public String generateAccessToken(User user) {
         return jwtService.generateAccessToken(
-            user.getId(), user.getEmail(), user.getRole().name());
+            user.getId(), user.getEmail(), user.getRole().name(), user.getName());
     }
 
     @Override

@@ -39,7 +39,7 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 
 ## Frontend (`jtech-tasklist-frontend/`)
 
-- **Stack**: Vue 3.5 (Composition API), TypeScript 6, Vite 7, Vue Router 5, Pinia 3, Vitest 4
+- **Stack**: Vue 3.5 (Composition API), TypeScript 6, Vite 7, Vue Router 5, Pinia 3, Vitest 4, Axios
 - **Node**: `^20.19.0 || >=22.12.0`
 - **Still missing**: Vuetify / Material Design (required per challenge spec, not yet installed)
 - **Commands** (run from `jtech-tasklist-frontend/`):
@@ -50,6 +50,8 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
   - `npm run lint` — ESLint flat config (`eslint.config.ts`)
   - `npm run format` — Prettier (`src/` only, semi:false, singleQuote:true, printWidth:100)
 - **Path alias**: `@` → `./src`
+- **Auth mode**: `VITE_AUTH_MODE=mock|api` env var (default `mock`). `api` mode POSTs to backend via axios. API base URL from `VITE_API_BASE_URL` (default `http://localhost:8080`). Mock mode does not support authenticated API calls beyond login/register (no tokens attached to requests).
+- **Services layer**: `src/services/api.ts` (axios instance with Bearer token interceptor), `src/services/authApi.ts` (login/register API calls)
 - **Pinia persistence**: `pinia-plugin-persistedstate@4.7.1` installed, registered in `src/main.ts`. Usage for setup stores:
   ```ts
   defineStore('id', () => { ... }, { persist: true })
@@ -81,3 +83,4 @@ Skills in `.agents/skills/` extend agent capabilities for this project's stack:
 - Update npm deps in the frontend directory, Gradle deps in the backend directory
 - No CI/CD, no GitHub Actions, no Docker compose for backing services yet
 - Backend tests in `src/test/java/br/com/jtech/tasklist/adapters/input/controllers/AuthIntegrationTest.java` (auth integration tests)
+- **Dev script**: `misc/scripts/dev.sh` — starts backend (port 8080) + frontend concurrently, cleans up both on Ctrl+C
