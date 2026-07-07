@@ -24,6 +24,7 @@ const selectedTaskId = ref<string | null>(null)
 const createError = ref('')
 const editError = ref('')
 const deleteError = ref('')
+const toggleError = ref('')
 
 onMounted(() => {
   listsStore.fetchLists()
@@ -103,7 +104,12 @@ async function handleDeleteTask() {
 }
 
 async function handleToggleComplete(id: string) {
-  await tasksStore.toggleComplete(id)
+  toggleError.value = ''
+  try {
+    await tasksStore.toggleComplete(id)
+  } catch (e: unknown) {
+    toggleError.value = e instanceof Error ? e.message : 'Failed to toggle task'
+  }
 }
 </script>
 
