@@ -63,7 +63,6 @@ Client                          Server
 
 **Erros:**
 - Email inexistente ou senha incorreta → `401 Unauthorized`
-- Refresh token inválido, expirado ou revogado → `401 Unauthorized`
 
 ---
 
@@ -108,6 +107,9 @@ Client                          Server
   │ <───────────────────────────── │
 ```
 
+**Erros:**
+- Refresh token inválido, expirado ou revogado → `401 Unauthorized`
+
 O refresh token é **rotativo**: a cada uso, o anterior é revogado e um novo é gerado. Isso limita a janela de ataque em caso de vazamento. Um novo access token também é emitido a cada refresh.
 
 ---
@@ -146,7 +148,7 @@ O refresh token é **rotativo**: a cada uso, o anterior é revogado e um novo é
 
 | Variável | Padrão | Obrigatório | Descrição |
 |---|---|---|---|
-| `JWT_SECRET` | `404a6141c4e2b0e5a1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3` | ✅ Produção | Chave HMAC para assinatura (min 256-bit) |
+| `JWT_SECRET` | *(padrão no yml — apenas dev)* | ✅ Produção | Chave HMAC para assinatura (min 256-bit) |
 | `JWT_ACCESS_EXPIRATION` | `900000` (15 min) | ❌ | Duração do access token em ms |
 | `JWT_REFRESH_EXPIRATION` | `604800000` (7 dias) | ❌ | Duração do refresh token em ms |
 
@@ -160,7 +162,7 @@ O refresh token é **rotativo**: a cada uso, o anterior é revogado e um novo é
 - **Access token**: assinado HMAC-SHA256, sem armazenamento no servidor
 - **Refresh token**: armazenado no banco, revogável individualmente, rotação a cada uso
 - **CSRF**: desabilitado (API stateless, sem cookies de sessão)
-- **CORS**: não configurado — deve ser adicionado conforme necessidade do frontend
+- **CORS**: `CorsConfig` permite apenas `http://localhost:5173` (hardcoded) — ver `config-externalization-hygiene` no backlog para externalização
 - **Endpoint público**: apenas `/api/v1/auth/**`, `/doc/**`, `/actuator/**` — demais exigem token
 
 ---
@@ -173,6 +175,11 @@ O refresh token é **rotativo**: a cada uso, o anterior é revogado e um novo é
         → RegisterUserUseCase
             → UserOutputGateway (porta de saída)
                 → UserAdapter → UserRepository (JPA)
+
+⚠️ Nota: atualmente AuthController.register() chama tokenOutputGateway
+e refreshTokenOutputGateway diretamente, sem passar pelo use case
+(diferente de login/refresh). Ver register-flow-bypasses-usecase-layer
+no backlog.
 
 [AuthController]
     → LoginInputGateway (porta de entrada)
