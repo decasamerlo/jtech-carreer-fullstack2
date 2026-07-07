@@ -2,9 +2,6 @@
 
 ## Bugs
 
-### tasklist-delete-is-hard-delete-no-cascade
-`TasklistAdapter.delete()` calls `TasklistRepository.deleteByIdAndUserId(...)`, a derived JPA delete that issues a real `DELETE FROM tasklist`. Every other soft-deletable entity (see `TaskAdapter.delete()`) sets `deletedAt`/`deletedBy` via `markAsDeleted()` and saves. Two consequences: (1) deleting a tasklist loses its audit trail instead of recording who/when; (2) `task.tasklist_id` has an FK to `tasklist(id)` with no `ON DELETE` clause (default `NO ACTION` in Postgres), so deleting a tasklist that has *any* task rows — including soft-deleted ones, since their rows still physically exist — will throw a `DataIntegrityViolationException`. `GlobalExceptionHandler` has no handler for it, so it falls through to `handleGeneral()` and the user gets a bare 500. Fix: make tasklist deletion a soft delete like tasks, and decide+implement the cascade behavior for child tasks (soft-delete them too, or block deletion with a clear 409 message).
-
 ### tasklist-name-not-unique-in-api-mode
 The frontend mock store (`lists.ts` → `validateName()`) rejects duplicate tasklist names per user, and it's tested. The real backend has no equivalent check: `CreateTasklistUseCase`/`TasklistAdapter.create()` don't check for an existing name, and no migration adds a unique constraint on `(user_id, name)` for `tasklist` (contrast with `V007`, which adds one for `task(tasklist_id, title)`). `TasklistIntegrationTest` has no duplicate-name test. Result: in `api` mode, users can create multiple tasklists with the same name; in `mock` mode, they can't. Decide the intended behavior and enforce it consistently (use case check + DB constraint + test), matching the pattern already used for tasks.
 
@@ -93,4 +90,5 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - frontend-lists-backend-integration
 - backend-tasks
 - frontend-tasks-crud
-- docs-readme: root `README.md` already covers architecture, stack justifications, setup, tests, folder structure, and technical decisions per spec; this pass adds a "Pontos de Atenção Conhecidos" section and fixes a couple of stale details.
+- docs-readme
+- soft-delete-tasklist-cascade

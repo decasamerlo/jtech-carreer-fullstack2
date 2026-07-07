@@ -6,21 +6,16 @@ import br.com.jtech.tasklist.application.ports.output.CreateTaskOutputGateway;
 import br.com.jtech.tasklist.application.ports.output.GetTasklistsOutputGateway;
 import br.com.jtech.tasklist.application.ports.output.GetTasksOutputGateway;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class CreateTaskUseCase implements CreateTaskInputGateway {
 
     private final CreateTaskOutputGateway createTaskOutputGateway;
     private final GetTasklistsOutputGateway getTasklistsOutputGateway;
     private final GetTasksOutputGateway getTasksOutputGateway;
-
-    public CreateTaskUseCase(CreateTaskOutputGateway createTaskOutputGateway,
-                             GetTasklistsOutputGateway getTasklistsOutputGateway,
-                             GetTasksOutputGateway getTasksOutputGateway) {
-        this.createTaskOutputGateway = createTaskOutputGateway;
-        this.getTasklistsOutputGateway = getTasklistsOutputGateway;
-        this.getTasksOutputGateway = getTasksOutputGateway;
-    }
 
     @Override
     public Task create(Task task) {

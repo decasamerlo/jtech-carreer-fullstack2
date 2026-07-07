@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface GetTasklistsOutputGateway {
     List<Tasklist> findAllByUserId(UUID userId);
     Tasklist findByIdAndUserId(UUID id, UUID userId);
+    boolean existsByTasklistIdAndUserId(UUID tasklistId, UUID userId);
 }

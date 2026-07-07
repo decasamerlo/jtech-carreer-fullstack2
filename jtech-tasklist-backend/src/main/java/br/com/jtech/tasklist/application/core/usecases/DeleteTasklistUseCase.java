@@ -5,18 +5,15 @@ import br.com.jtech.tasklist.application.ports.input.DeleteTasklistInputGateway;
 import br.com.jtech.tasklist.application.ports.output.DeleteTasklistOutputGateway;
 import br.com.jtech.tasklist.application.ports.output.GetTasklistsOutputGateway;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class DeleteTasklistUseCase implements DeleteTasklistInputGateway {
 
     private final DeleteTasklistOutputGateway deleteTasklistOutputGateway;
     private final GetTasklistsOutputGateway getTasklistsOutputGateway;
-
-    public DeleteTasklistUseCase(DeleteTasklistOutputGateway deleteTasklistOutputGateway,
-                                 GetTasklistsOutputGateway getTasklistsOutputGateway) {
-        this.deleteTasklistOutputGateway = deleteTasklistOutputGateway;
-        this.getTasklistsOutputGateway = getTasklistsOutputGateway;
-    }
 
     @Override
     public void delete(String id, String currentUserId) {

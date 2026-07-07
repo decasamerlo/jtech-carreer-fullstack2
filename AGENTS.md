@@ -16,7 +16,6 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 
 Found during code review; see `misc/docs/BACKLOG.md` for full detail and tracking. Worth knowing before touching related code:
 
-- **Tasklist deletion is a hard DB delete with no cascade** (`TasklistAdapter.delete` → `TasklistRepository.deleteByIdAndUserId`), unlike task deletion which soft-deletes via `markAsDeleted()`. Deleting a tasklist that has any tasks throws an FK violation, surfaced to the client as a bare 500.
 - **Tasklist name uniqueness is enforced only in the frontend mock store** — the real API and DB allow duplicate tasklist names per user.
 - **Task title duplicate-detection is case-sensitive in the backend/DB but case-insensitive in the frontend** validators.
 - **`JWT_SECRET` has a real, working default value committed in `application.yml`** — any deployment that doesn't override it is using a key anyone with repo access already has.
@@ -42,7 +41,7 @@ Found during code review; see `misc/docs/BACKLOG.md` for full detail and trackin
 - **Swagger**: enabled at `/doc/tasklist/v1/api.html`, API docs at `/doc/tasklist/v3/api-documents`
 - **Migrations**: Flyway migrations in `src/main/resources/db/migration/` with `V###__description.sql` naming convention
 - **JPA**: `ddl-auto: none` in production — Flyway manages schema via `db/migration/V*.sql`
-- **Audit base classes**: `application/core/domains/BaseDomain.java` (pure domain POJO with `T id` + audit + soft-delete helpers), `adapters/output/repositories/entities/BaseEntity.java` (`@MappedSuperclass` with Spring Data JPA Auditing annotations + `@Version`), `config/infra/audit/AuditorAwareImpl.java`, `config/infra/audit/JpaAuditingConfig.java`. Note: not every adapter actually uses the soft-delete helpers consistently — see Known Issues.
+- **Audit base classes**: `application/core/domains/BaseDomain.java` (pure domain POJO with `T id` + audit + soft-delete helpers), `adapters/output/repositories/entities/BaseEntity.java` (`@MappedSuperclass` with Spring Data JPA Auditing annotations + `@Version`), `config/infra/audit/AuditorAwareImpl.java`, `config/infra/audit/JpaAuditingConfig.java`.
 - **Profile**: `PROFILE` env var (default `dev`)
 - **Publishing**: Nexus at `nexus.jtech.com.br`, requires `MAVEN_REPO_USER`/`MAVEN_REPO_PASS`
 - **Docker compose**: PostgreSQL 18.4 service in `docker-compose.yml` (for local dev, run from `jtech-tasklist-backend/`) — covers the DB only; no Dockerfile for the app itself yet (see `prod-docker-compose` in backlog)
