@@ -51,6 +51,9 @@ public class TasklistAdapter implements CreateTasklistOutputGateway,
 
     @Override
     public void delete(String id, UUID userId) {
-        repository.deleteByIdAndUserId(UUID.fromString(id), userId);
+        var entity = repository.findByIdAndUserId(UUID.fromString(id), userId)
+                .orElseThrow(() -> new IllegalArgumentException("Tasklist not found"));
+        entity.markAsDeleted(userId);
+        repository.save(entity);
     }
 }

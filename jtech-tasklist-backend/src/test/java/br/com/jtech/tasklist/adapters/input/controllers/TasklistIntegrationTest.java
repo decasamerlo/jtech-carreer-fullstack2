@@ -153,6 +153,38 @@ class TasklistIntegrationTest {
     }
 
     @Test
+    void delete_ShouldSoftDelete_WhenTasklistHasTasks() throws Exception {
+        String listId = createList("List With Tasks", user1Token);
+        String body = objectMapper.writeValueAsString(Map.of("title", "My Task", "completed", false));
+        send("POST", "/api/v1/tasks?tasklistId=" + listId, body, user1Token);
+
+        HttpResponse<String> response = send("DELETE", "/api/v1/tasklists/" + listId, null, user1Token);
+        assertThat(response.statusCode()).isEqualTo(204);
+
+        List<Map<String, Object>> remaining = getLists(user1Token);
+        assertThat(remaining).isEmpty();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM tasklist WHERE id = ? AND deleted_at IS NOT NULL",
+                Integer.class, java.util.UUID.fromString(listId));
+        assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    void getTasks_ShouldReturn400_WhenTasklistIsDeleted() throws Exception {
+        String listId = createList("List With Tasks", user1Token);
+        String body = objectMapper.writeValueAsString(Map.of("title", "My Task", "completed", false));
+        send("POST", "/api/v1/tasks?tasklistId=" + listId, body, user1Token);
+
+        // Delete the list
+        send("DELETE", "/api/v1/tasklists/" + listId, null, user1Token);
+
+        // Try to fetch tasks for the deleted list
+        HttpResponse<String> tasksResp = send("GET", "/api/v1/tasks?tasklistId=" + listId, null, user1Token);
+        assertThat(tasksResp.statusCode()).isEqualTo(400);
+    }
+
+    @Test
     void delete_ShouldReturn4xx_WhenNotOwner() throws Exception {
         String id = createList("User1 List", user1Token);
 
