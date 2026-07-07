@@ -63,6 +63,6 @@ describe('TaskItem', () => {
   it('checkbox is checked when task is completed', () => {
     const task = { ...mockTask, completed: true }
     const wrapper = mount(TaskItem, { props: { task } })
-    expect(wrapper.find('input[type="checkbox"]').element.checked).toBe(true)
+    expect((wrapper.find('input[type="checkbox"]').element as HTMLInputElement).checked).toBe(true)
   })
 })

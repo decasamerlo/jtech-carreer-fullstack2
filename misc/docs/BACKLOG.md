@@ -5,9 +5,6 @@
 ### frontend-error-handling
 Add toast/snackbar notifications for API errors in frontend. Handle HTTP error responses gracefully with user-facing messages (e.g., network errors, 4xx/5xx). Depends on: frontend-lists-backend-integration.
 
-### frontend-tasks-crud
-Implement CRUD for tasks per list (add, edit, remove, mark completion). Prevent duplicates, validate required fields. Depends on: frontend-lists-crud.
-
 ### vuetify
 Install Vuetify + @mdi/font. Migrate UI to Material Design. Depends on: frontend-tasks-crud.
 
@@ -48,3 +45,4 @@ Review and standardize error mapping across backend (exception handlers, HTTP st
 - frontend-lists-crud
 - frontend-lists-backend-integration
 - backend-tasks
+- frontend-tasks-crud
