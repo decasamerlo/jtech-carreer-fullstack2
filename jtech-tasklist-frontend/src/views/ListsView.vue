@@ -137,6 +137,9 @@ async function handleToggleComplete(id: string) {
               : '—'
           }}
         </p>
+        <p v-if="toggleError" class="toggle-error" role="alert" aria-live="polite">
+          {{ toggleError }}
+        </p>
         <div v-if="tasksStore.tasksForActiveList.length === 0" class="empty-tasks">
           <p>No tasks yet. Add one to get started!</p>
         </div>
@@ -241,6 +244,12 @@ async function handleToggleComplete(id: string) {
 
 .list-meta {
   color: #888;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.toggle-error {
+  color: #e74c3c;
   font-size: 0.875rem;
   margin-bottom: 1.5rem;
 }

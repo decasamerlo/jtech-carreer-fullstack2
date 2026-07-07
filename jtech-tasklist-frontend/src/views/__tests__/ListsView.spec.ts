@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -94,5 +94,29 @@ describe('ListsView', () => {
 
     expect(wrapper.find('.empty-tasks').exists()).toBe(true)
     expect(wrapper.text()).toContain('No tasks yet')
+  })
+
+  it('shows toggle error when toggleComplete fails', async () => {
+    const wrapper = mount(ListsView, {
+      global: { plugins: [router] },
+    })
+    await flushPromises()
+    const listsStore = useListsStore()
+    listsStore.createList('My Tasks')
+    await flushPromises()
+
+    const tasksStore = useTasksStore()
+    await tasksStore.addTask(listsStore.activeListId!, 'Toggle me')
+    await flushPromises()
+
+    vi.spyOn(tasksStore, 'toggleComplete').mockRejectedValueOnce(
+      new Error('Could not reach server'),
+    )
+
+    await wrapper.find('input[type="checkbox"]').trigger('change')
+    await flushPromises()
+
+    expect(wrapper.find('.toggle-error').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Could not reach server')
   })
 })
