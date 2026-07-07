@@ -41,6 +41,16 @@ public class TaskAdapter implements CreateTaskOutputGateway,
     }
 
     @Override
+    public boolean existsByTasklistIdAndTitle(UUID tasklistId, String title) {
+        return repository.existsByTasklistIdAndTitle(tasklistId, title);
+    }
+
+    @Override
+    public boolean existsByTasklistIdAndTitleAndIdNot(UUID tasklistId, String title, UUID excludeId) {
+        return repository.existsByTasklistIdAndTitleAndIdNot(tasklistId, title, excludeId);
+    }
+
+    @Override
     public Task update(Task task, UUID userId) {
         var existing = repository.findByIdAndUserId(UUID.fromString(task.getId()), userId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found"));

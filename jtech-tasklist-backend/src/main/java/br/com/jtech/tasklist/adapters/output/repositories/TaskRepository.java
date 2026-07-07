@@ -24,4 +24,6 @@ import java.util.UUID;
 public interface TaskRepository extends JpaRepository<TaskEntity, UUID> {
     List<TaskEntity> findByTasklistIdAndUserId(UUID tasklistId, UUID userId);
     Optional<TaskEntity> findByIdAndUserId(UUID id, UUID userId);
+    boolean existsByTasklistIdAndTitle(UUID tasklistId, String title);
+    boolean existsByTasklistIdAndTitleAndIdNot(UUID tasklistId, String title, UUID id);
 }

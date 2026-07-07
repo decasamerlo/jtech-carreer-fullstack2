@@ -4,6 +4,7 @@ import br.com.jtech.tasklist.application.core.domains.Task;
 import br.com.jtech.tasklist.application.ports.input.CreateTaskInputGateway;
 import br.com.jtech.tasklist.application.ports.output.CreateTaskOutputGateway;
 import br.com.jtech.tasklist.application.ports.output.GetTasklistsOutputGateway;
+import br.com.jtech.tasklist.application.ports.output.GetTasksOutputGateway;
 
 import java.util.UUID;
 
@@ -11,11 +12,14 @@ public class CreateTaskUseCase implements CreateTaskInputGateway {
 
     private final CreateTaskOutputGateway createTaskOutputGateway;
     private final GetTasklistsOutputGateway getTasklistsOutputGateway;
+    private final GetTasksOutputGateway getTasksOutputGateway;
 
     public CreateTaskUseCase(CreateTaskOutputGateway createTaskOutputGateway,
-                             GetTasklistsOutputGateway getTasklistsOutputGateway) {
+                             GetTasklistsOutputGateway getTasklistsOutputGateway,
+                             GetTasksOutputGateway getTasksOutputGateway) {
         this.createTaskOutputGateway = createTaskOutputGateway;
         this.getTasklistsOutputGateway = getTasklistsOutputGateway;
+        this.getTasksOutputGateway = getTasksOutputGateway;
     }
 
     @Override
@@ -25,6 +29,12 @@ public class CreateTaskUseCase implements CreateTaskInputGateway {
                 UUID.fromString(task.getUserId()));
         if (tasklist == null) {
             throw new IllegalArgumentException("Tasklist not found or access denied");
+        }
+        boolean duplicate = getTasksOutputGateway.existsByTasklistIdAndTitle(
+                UUID.fromString(task.getTasklistId()),
+                task.getTitle());
+        if (duplicate) {
+            throw new IllegalArgumentException("A task with this title already exists in this list");
         }
         return createTaskOutputGateway.create(task);
     }
