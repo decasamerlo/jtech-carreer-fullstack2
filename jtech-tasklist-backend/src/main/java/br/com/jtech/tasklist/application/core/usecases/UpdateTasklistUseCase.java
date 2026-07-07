@@ -5,16 +5,13 @@ import br.com.jtech.tasklist.application.ports.input.UpdateTasklistInputGateway;
 import br.com.jtech.tasklist.application.ports.output.GetTasklistsOutputGateway;
 import br.com.jtech.tasklist.application.ports.output.UpdateTasklistOutputGateway;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class UpdateTasklistUseCase implements UpdateTasklistInputGateway {
 
     private final UpdateTasklistOutputGateway updateTasklistOutputGateway;
     private final GetTasklistsOutputGateway getTasklistsOutputGateway;
-
-    public UpdateTasklistUseCase(UpdateTasklistOutputGateway updateTasklistOutputGateway,
-                                 GetTasklistsOutputGateway getTasklistsOutputGateway) {
-        this.updateTasklistOutputGateway = updateTasklistOutputGateway;
-        this.getTasklistsOutputGateway = getTasklistsOutputGateway;
-    }
 
     @Override
     public Tasklist update(Tasklist tasklist, String currentUserId) {

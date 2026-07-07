@@ -237,4 +237,27 @@ class TaskIntegrationTest {
         HttpResponse<String> response = send("DELETE", "/api/v1/tasks/" + id, null, user2Token);
         assertThat(response.statusCode()).isGreaterThanOrEqualTo(400).isLessThan(500);
     }
+
+    @Test
+    void update_ShouldReturn400_WhenTasklistIsDeleted() throws Exception {
+        String listId = createTasklist("List With Tasks", user1Token);
+        String taskId = createTask("My Task", listId, user1Token);
+
+        send("DELETE", "/api/v1/tasklists/" + listId, null, user1Token);
+
+        HttpResponse<String> response = send("PUT", "/api/v1/tasks/" + taskId,
+                objectMapper.writeValueAsString(Map.of("title", "Updated")), user1Token);
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void delete_ShouldReturn400_WhenTasklistIsDeleted() throws Exception {
+        String listId = createTasklist("List With Tasks", user1Token);
+        String taskId = createTask("My Task", listId, user1Token);
+
+        send("DELETE", "/api/v1/tasklists/" + listId, null, user1Token);
+
+        HttpResponse<String> response = send("DELETE", "/api/v1/tasks/" + taskId, null, user1Token);
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
 }

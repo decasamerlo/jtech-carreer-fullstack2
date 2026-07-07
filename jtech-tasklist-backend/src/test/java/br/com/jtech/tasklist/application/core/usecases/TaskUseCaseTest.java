@@ -45,9 +45,9 @@ class TaskUseCaseTest {
         deleteTaskOutputGateway = mock(DeleteTaskOutputGateway.class);
 
         createTaskUseCase = new CreateTaskUseCase(createTaskOutputGateway, getTasklistsOutputGateway, getTasksOutputGateway);
-        getTasksUseCase = new GetTasksUseCase(getTasksOutputGateway);
-        updateTaskUseCase = new UpdateTaskUseCase(updateTaskOutputGateway, getTasksOutputGateway);
-        deleteTaskUseCase = new DeleteTaskUseCase(deleteTaskOutputGateway, getTasksOutputGateway);
+        getTasksUseCase = new GetTasksUseCase(getTasksOutputGateway, getTasklistsOutputGateway);
+        updateTaskUseCase = new UpdateTaskUseCase(updateTaskOutputGateway, getTasksOutputGateway, getTasklistsOutputGateway);
+        deleteTaskUseCase = new DeleteTaskUseCase(deleteTaskOutputGateway, getTasksOutputGateway, getTasklistsOutputGateway);
     }
 
     @Test
@@ -138,6 +138,7 @@ class TaskUseCaseTest {
                 .build();
 
         when(getTasksOutputGateway.findByIdAndUserId(taskId, userId)).thenReturn(existing);
+        when(getTasklistsOutputGateway.existsByTasklistIdAndUserId(tasklistId, userId)).thenReturn(true);
         when(getTasksOutputGateway.existsByTasklistIdAndTitleAndIdNot(tasklistId, "Existing Task", taskId))
                 .thenReturn(true);
 
@@ -149,6 +150,30 @@ class TaskUseCaseTest {
     }
 
     @Test
+    void findByTasklistIdAndUserId_ShouldThrow_WhenTasklistNotFound() {
+        when(getTasklistsOutputGateway.existsByTasklistIdAndUserId(tasklistId, userId)).thenReturn(false);
+
+        assertThatThrownBy(() -> getTasksUseCase.findByTasklistIdAndUserId(
+                tasklistId.toString(), userId.toString()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Tasklist not found or access denied");
+
+        verify(getTasksOutputGateway, never()).findByTasklistIdAndUserId(any(), any());
+    }
+
+    @Test
+    void findByIdAndUserId_ShouldThrow_WhenTasklistDeleted() {
+        Task task = Task.builder().id(taskId.toString()).tasklistId(tasklistId.toString()).userId(userId.toString()).build();
+
+        when(getTasksOutputGateway.findByIdAndUserId(taskId, userId)).thenReturn(task);
+        when(getTasklistsOutputGateway.existsByTasklistIdAndUserId(tasklistId, userId)).thenReturn(false);
+
+        assertThatThrownBy(() -> getTasksUseCase.findByIdAndUserId(taskId.toString(), userId.toString()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Tasklist not found or access denied");
+    }
+
+    @Test
     void findByTasklistIdAndUserId_ShouldDelegateToOutputGateway() {
         Task task = Task.builder()
                 .id(taskId.toString())
@@ -157,6 +182,7 @@ class TaskUseCaseTest {
                 .userId(userId.toString())
                 .build();
 
+        when(getTasklistsOutputGateway.existsByTasklistIdAndUserId(tasklistId, userId)).thenReturn(true);
         when(getTasksOutputGateway.findByTasklistIdAndUserId(tasklistId, userId))
                 .thenReturn(List.of(task));
 
@@ -217,6 +243,7 @@ class TaskUseCaseTest {
                 .build();
 
         when(getTasksOutputGateway.findByIdAndUserId(taskId, userId)).thenReturn(existing);
+        when(getTasklistsOutputGateway.existsByTasklistIdAndUserId(tasklistId, userId)).thenReturn(true);
         when(getTasksOutputGateway.existsByTasklistIdAndTitleAndIdNot(tasklistId, "Updated", taskId)).thenReturn(false);
         when(updateTaskOutputGateway.update(task, userId)).thenReturn(updated);
 
@@ -242,13 +269,60 @@ class TaskUseCaseTest {
         Task existing = Task.builder()
                 .id(taskId.toString())
                 .title("To Delete")
+                .tasklistId(tasklistId.toString())
                 .userId(userId.toString())
                 .build();
 
         when(getTasksOutputGateway.findByIdAndUserId(taskId, userId)).thenReturn(existing);
+        when(getTasklistsOutputGateway.existsByTasklistIdAndUserId(tasklistId, userId)).thenReturn(true);
 
         deleteTaskUseCase.delete(taskId.toString(), userId.toString());
 
         verify(deleteTaskOutputGateway).delete(taskId.toString(), userId);
+    }
+
+    @Test
+    void update_ShouldThrow_WhenTasklistDeleted() {
+        Task task = Task.builder()
+                .id(taskId.toString())
+                .title("Updated")
+                .tasklistId(tasklistId.toString())
+                .userId(userId.toString())
+                .build();
+
+        Task existing = Task.builder()
+                .id(taskId.toString())
+                .title("Original")
+                .tasklistId(tasklistId.toString())
+                .userId(userId.toString())
+                .build();
+
+        when(getTasksOutputGateway.findByIdAndUserId(taskId, userId)).thenReturn(existing);
+        when(getTasklistsOutputGateway.existsByTasklistIdAndUserId(tasklistId, userId)).thenReturn(false);
+
+        assertThatThrownBy(() -> updateTaskUseCase.update(task, userId.toString()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Tasklist not found or access denied");
+
+        verify(updateTaskOutputGateway, never()).update(any(), any());
+    }
+
+    @Test
+    void delete_ShouldThrow_WhenTasklistDeleted() {
+        Task existing = Task.builder()
+                .id(taskId.toString())
+                .title("To Delete")
+                .tasklistId(tasklistId.toString())
+                .userId(userId.toString())
+                .build();
+
+        when(getTasksOutputGateway.findByIdAndUserId(taskId, userId)).thenReturn(existing);
+        when(getTasklistsOutputGateway.existsByTasklistIdAndUserId(tasklistId, userId)).thenReturn(false);
+
+        assertThatThrownBy(() -> deleteTaskUseCase.delete(taskId.toString(), userId.toString()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Tasklist not found or access denied");
+
+        verify(deleteTaskOutputGateway, never()).delete(any(), any());
     }
 }

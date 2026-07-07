@@ -41,6 +41,11 @@ public class TasklistAdapter implements CreateTasklistOutputGateway,
     }
 
     @Override
+    public boolean existsByTasklistIdAndUserId(UUID tasklistId, UUID userId) {
+        return repository.findByIdAndUserId(tasklistId, userId).isPresent();
+    }
+
+    @Override
     public Tasklist update(Tasklist tasklist, UUID userId) {
         var existing = repository.findByIdAndUserId(UUID.fromString(tasklist.getId()), userId)
                 .orElseThrow(() -> new IllegalArgumentException("Tasklist not found"));

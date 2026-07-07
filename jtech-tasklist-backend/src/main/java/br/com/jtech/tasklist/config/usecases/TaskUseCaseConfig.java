@@ -18,17 +18,17 @@ public class TaskUseCaseConfig {
     }
 
     @Bean
-    public GetTasksUseCase getTasksUseCase(TaskAdapter taskAdapter) {
-        return new GetTasksUseCase(taskAdapter);
+    public GetTasksUseCase getTasksUseCase(TaskAdapter taskAdapter, TasklistAdapter tasklistAdapter) {
+        return new GetTasksUseCase(taskAdapter, tasklistAdapter);
     }
 
     @Bean
-    public UpdateTaskUseCase updateTaskUseCase(TaskAdapter taskAdapter) {
-        return new UpdateTaskUseCase(taskAdapter, taskAdapter);
+    public UpdateTaskUseCase updateTaskUseCase(TaskAdapter taskAdapter, TasklistAdapter tasklistAdapter) {
+        return new UpdateTaskUseCase(taskAdapter, taskAdapter, tasklistAdapter);
     }
 
     @Bean
-    public DeleteTaskUseCase deleteTaskUseCase(TaskAdapter taskAdapter) {
-        return new DeleteTaskUseCase(taskAdapter, taskAdapter);
+    public DeleteTaskUseCase deleteTaskUseCase(TaskAdapter taskAdapter, TasklistAdapter tasklistAdapter) {
+        return new DeleteTaskUseCase(taskAdapter, taskAdapter, tasklistAdapter);
     }
 }
