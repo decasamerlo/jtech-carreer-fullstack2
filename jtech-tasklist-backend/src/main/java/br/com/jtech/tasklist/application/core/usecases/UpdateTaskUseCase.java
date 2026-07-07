@@ -24,6 +24,13 @@ public class UpdateTaskUseCase implements UpdateTaskInputGateway {
         if (existing == null) {
             throw new IllegalArgumentException("Task not found or access denied");
         }
+        boolean duplicate = getTasksOutputGateway.existsByTasklistIdAndTitleAndIdNot(
+                java.util.UUID.fromString(existing.getTasklistId()),
+                task.getTitle(),
+                java.util.UUID.fromString(task.getId()));
+        if (duplicate) {
+            throw new IllegalArgumentException("A task with this title already exists in this list");
+        }
         return updateTaskOutputGateway.update(task, java.util.UUID.fromString(currentUserId));
     }
 }

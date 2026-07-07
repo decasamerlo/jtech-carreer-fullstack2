@@ -51,7 +51,7 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
   - `npm run format` — Prettier (`src/` only, semi:false, singleQuote:true, printWidth:100)
 - **Path alias**: `@` → `./src`
 - **Auth mode**: `VITE_AUTH_MODE=mock|api` env var (default `mock`). `api` mode POSTs to backend via axios. API base URL from `VITE_API_BASE_URL` (default `http://localhost:8080`). Mock mode does not support authenticated API calls beyond login/register (no tokens attached to requests).
-- **Services layer**: `src/services/api.ts` (axios instance with Bearer token interceptor), `src/services/authApi.ts` (login/register API calls), `src/services/tasklistApi.ts` (CRUD operations for tasklists in API mode)
+- **Services layer**: `src/services/api.ts` (axios instance with Bearer token interceptor), `src/services/authApi.ts` (login/register API calls), `src/services/tasklistApi.ts` (CRUD operations for tasklists in API mode), `src/services/taskApi.ts` (CRUD operations for tasks in API mode)
 - **Pinia persistence**: `pinia-plugin-persistedstate@4.7.1` installed, registered in `src/main.ts`. Usage for setup stores:
   ```ts
   defineStore('id', () => { ... }, { persist: true })
@@ -59,6 +59,7 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
   defineStore('id', () => { ... }, { persist: { storage: sessionStorage, pick: ['user'] } })
   ```
 - **Lists feature**: Pinia store (`src/stores/lists.ts`) with CRUD operations, localStorage persistence, dialog components (Create, Rename, Delete), sidebar navigation, and `/lists` route with auth guard. Supports dual mode: `mock` (localStorage) and `api` (backend via `tasklistApi.ts`).
+- **Tasks feature**: Pinia store (`src/stores/tasks.ts`) with CRUD operations, per-list filtering (`tasksForActiveList`), completion toggle, localStorage persistence via `pinia-plugin-persistedstate`. Components: `TaskItem.vue` (checkbox, edit/delete on hover), `CreateTaskDialog.vue`, `EditTaskDialog.vue`, `DeleteTaskDialog.vue`. Services: `taskApi.ts` (API mode CRUD). Route `/lists/:id` with task list view.
 - **Test files**: located in `src/**/__tests__/` (inferred from `vitest.config.ts` exclude + eslint plugin pattern)
 - **ESLint**: `pluginVue.configs['flat/essential']` + `vueTsConfigs.recommended` + `pluginVitest` for `__tests__` files
 - **EditorConfig**: 2-space indent, lf, utf-8, final newline, printWidth 100

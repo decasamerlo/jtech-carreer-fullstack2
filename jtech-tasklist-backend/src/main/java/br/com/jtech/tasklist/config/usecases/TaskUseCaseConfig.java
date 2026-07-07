@@ -14,7 +14,7 @@ public class TaskUseCaseConfig {
 
     @Bean
     public CreateTaskUseCase createTaskUseCase(TaskAdapter taskAdapter, TasklistAdapter tasklistAdapter) {
-        return new CreateTaskUseCase(taskAdapter, tasklistAdapter);
+        return new CreateTaskUseCase(taskAdapter, tasklistAdapter, taskAdapter);
     }
 
     @Bean

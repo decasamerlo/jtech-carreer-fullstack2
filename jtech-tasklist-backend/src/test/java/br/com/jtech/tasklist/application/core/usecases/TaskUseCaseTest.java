@@ -44,7 +44,7 @@ class TaskUseCaseTest {
         updateTaskOutputGateway = mock(UpdateTaskOutputGateway.class);
         deleteTaskOutputGateway = mock(DeleteTaskOutputGateway.class);
 
-        createTaskUseCase = new CreateTaskUseCase(createTaskOutputGateway, getTasklistsOutputGateway);
+        createTaskUseCase = new CreateTaskUseCase(createTaskOutputGateway, getTasklistsOutputGateway, getTasksOutputGateway);
         getTasksUseCase = new GetTasksUseCase(getTasksOutputGateway);
         updateTaskUseCase = new UpdateTaskUseCase(updateTaskOutputGateway, getTasksOutputGateway);
         deleteTaskUseCase = new DeleteTaskUseCase(deleteTaskOutputGateway, getTasksOutputGateway);
@@ -88,12 +88,64 @@ class TaskUseCaseTest {
                 .build();
 
         when(getTasklistsOutputGateway.findByIdAndUserId(tasklistId, userId)).thenReturn(tasklist);
+        when(getTasksOutputGateway.existsByTasklistIdAndTitle(tasklistId, "Test Task")).thenReturn(false);
         when(createTaskOutputGateway.create(task)).thenReturn(createdTask);
 
         Task result = createTaskUseCase.create(task);
 
         assertThat(result).isEqualTo(createdTask);
         verify(createTaskOutputGateway).create(task);
+    }
+
+    @Test
+    void create_ShouldThrow_WhenDuplicateTitleInList() {
+        Task task = Task.builder()
+                .title("Existing Task")
+                .tasklistId(tasklistId.toString())
+                .userId(userId.toString())
+                .build();
+
+        Tasklist tasklist = Tasklist.builder()
+                .id(tasklistId.toString())
+                .userId(userId.toString())
+                .build();
+
+        when(getTasklistsOutputGateway.findByIdAndUserId(tasklistId, userId)).thenReturn(tasklist);
+        when(getTasksOutputGateway.existsByTasklistIdAndTitle(tasklistId, "Existing Task"))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> createTaskUseCase.create(task))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("A task with this title already exists in this list");
+
+        verify(createTaskOutputGateway, never()).create(any());
+    }
+
+    @Test
+    void update_ShouldThrow_WhenDuplicateTitleInList() {
+        Task task = Task.builder()
+                .id(taskId.toString())
+                .title("Existing Task")
+                .tasklistId(tasklistId.toString())
+                .userId(userId.toString())
+                .build();
+
+        Task existing = Task.builder()
+                .id(taskId.toString())
+                .title("Original")
+                .tasklistId(tasklistId.toString())
+                .userId(userId.toString())
+                .build();
+
+        when(getTasksOutputGateway.findByIdAndUserId(taskId, userId)).thenReturn(existing);
+        when(getTasksOutputGateway.existsByTasklistIdAndTitleAndIdNot(tasklistId, "Existing Task", taskId))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> updateTaskUseCase.update(task, userId.toString()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("A task with this title already exists in this list");
+
+        verify(updateTaskOutputGateway, never()).update(any(), any());
     }
 
     @Test
@@ -146,22 +198,26 @@ class TaskUseCaseTest {
         Task task = Task.builder()
                 .id(taskId.toString())
                 .title("Updated")
+                .tasklistId(tasklistId.toString())
                 .userId(userId.toString())
                 .build();
 
         Task existing = Task.builder()
                 .id(taskId.toString())
                 .title("Original")
+                .tasklistId(tasklistId.toString())
                 .userId(userId.toString())
                 .build();
 
         Task updated = Task.builder()
                 .id(taskId.toString())
                 .title("Updated")
+                .tasklistId(tasklistId.toString())
                 .userId(userId.toString())
                 .build();
 
         when(getTasksOutputGateway.findByIdAndUserId(taskId, userId)).thenReturn(existing);
+        when(getTasksOutputGateway.existsByTasklistIdAndTitleAndIdNot(tasklistId, "Updated", taskId)).thenReturn(false);
         when(updateTaskOutputGateway.update(task, userId)).thenReturn(updated);
 
         Task result = updateTaskUseCase.update(task, userId.toString());
