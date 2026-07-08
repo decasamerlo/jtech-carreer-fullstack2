@@ -277,8 +277,6 @@ Problemas e lacunas identificados durante revisão de código. O backlog complet
 |---|---|---|
 | `tasklist-delete-is-hard-delete-no-cascade` | Exclusão de tasklist faz `DELETE` real (hard delete) em vez de soft delete como tasks. FK sem `ON DELETE` causa `500` ao excluir tasklist que possui tarefas. | Perda de trilha de auditoria + erro 500 para o usuário |
 | `task-title-uniqueness-case-mismatch` | Frontend compara títulos case-insensitively, backend/DB compara case-sensitively. Mesma tarefa pode ser duplicada ou bloqueada dependendo do modo. | Validação inconsistente |
-| `register-flow-bypasses-usecase-layer` | `AuthController.register()` gera tokens diretamente em vez de delegar ao use case, diferente de login/refresh. Viola a fronteira hexagonal. | Inconsistência arquitetural |
-
 ### Segurança
 
 | ID | Resumo | Recomendação |

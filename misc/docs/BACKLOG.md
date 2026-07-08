@@ -1,10 +1,5 @@
 # Backlog
 
-## Bugs
-
-### register-flow-bypasses-usecase-layer
-`AuthController.register()` calls `registerUserInputGateway.register(user)` and then *directly* calls `tokenOutputGateway.generateAccessToken()` and `refreshTokenOutputGateway.createRefreshToken()` from the controller. `LoginUseCase` and `RefreshUseCase`, by contrast, own their token issuance internally and return a result record — controllers just call one input port. This is an inconsistent application of the hexagonal boundary the rest of the codebase (and `AGENTS.md`) is careful about, and it means `RegisterUserUseCase` can't be unit-tested for "does registration return usable tokens" the way login can. Move token issuance into `RegisterUserUseCase` (or a new use case) so the controller only depends on input ports, matching login/refresh.
-
 ## Security
 
 ### jwt-secret-default-committed
@@ -33,7 +28,7 @@ No catch-all route exists in `router/index.ts` (no `path: '/:pathMatch(.*)*'`). 
 `TaskMapper`/`TasklistMapper` already exist as standalone classes and are used by `TaskAdapter`/`TasklistAdapter` — that part of this item is complete. Still open: `UserAdapter` keeps `toEntity`/`toDomain` as private inline methods, and `RefreshTokenAdapter.findValidUserByToken()` duplicates the exact same `User`-building logic inline a second time (a straightforward DRY violation — extract a `UserMapper`). Also still open: `Tasklist.java` (domain) imports `br.com.jtech.tasklist.adapters.input.protocols.TasklistRequest` for a static factory method `Tasklist.of(TasklistRequest)` — this is the DIP violation this item was written for, and as far as we can tell `TasklistController` doesn't even call it (it builds `Tasklist` via the builder directly), so it looks like dead code on top of being a layering violation. Remove or relocate it. Depends on: audit-base-class.
 
 ### tests-backend — partially done
-Integration tests exist for all three controllers (`AuthIntegrationTest`, `TasklistIntegrationTest`, `TaskIntegrationTest`) and unit tests exist for Task/Tasklist use cases (`TaskUseCaseTest`, `TasklistUseCaseTest`, Mockito). Remaining gaps: no unit tests for `RegisterUserUseCase`, `LoginUseCase`, `RefreshUseCase`, or `JwtService` in isolation (only exercised indirectly through `AuthIntegrationTest`); no test asserts the tasklist-delete-with-tasks scenario (see Bugs); `AuthIntegrationTest` uses `RestTemplate` while `Task`/`TasklistIntegrationTest` use raw `java.net.http.HttpClient` — pick one for consistency. Depends on: backend-auth, backend-tasks.
+Integration tests exist for all three controllers (`AuthIntegrationTest`, `TasklistIntegrationTest`, `TaskIntegrationTest`) and unit tests exist for Task/Tasklist use cases (`TaskUseCaseTest`, `TasklistUseCaseTest`, Mockito) and for `RegisterUserUseCase` (`RegisterUserUseCaseTest`). Remaining gaps: no unit tests for `LoginUseCase`, `RefreshUseCase`, or `JwtService` in isolation (only exercised indirectly through `AuthIntegrationTest`); no test asserts the tasklist-delete-with-tasks scenario (see Bugs); `AuthIntegrationTest` uses `RestTemplate` while `Task`/`TasklistIntegrationTest` use raw `java.net.http.HttpClient` — pick one for consistency. Depends on: backend-auth, backend-tasks.
 
 ### tests-frontend — partially done
 Solid coverage already exists across stores, services, most components, and the router guard. Remaining gaps: no `RegisterView.spec.ts` (LoginView has one; Register has equivalent validation/error-display complexity), no dedicated test for `TaskListSidebar.vue`'s own list-rendering logic (its dialogs are tested individually), and no test for `HomeView.vue`/`AboutView.vue`. Depends on: frontend-auth, frontend-lists-crud, frontend-tasks-crud, vuetify.
@@ -86,3 +81,4 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - tasklist-name-not-unique-in-api-mode
 - register-email-race-condition
 - task-title-uniqueness-case-mismatch
+- register-flow-bypasses-usecase-layer

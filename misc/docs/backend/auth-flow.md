@@ -173,13 +173,10 @@ O refresh token é **rotativo**: a cada uso, o anterior é revogado e um novo é
 [AuthController]
     → RegisterUserInputGateway (porta de entrada)
         → RegisterUserUseCase
-            → UserOutputGateway (porta de saída)
-                → UserAdapter → UserRepository (JPA)
-
-⚠️ Nota: atualmente AuthController.register() chama tokenOutputGateway
-e refreshTokenOutputGateway diretamente, sem passar pelo use case
-(diferente de login/refresh). Ver register-flow-bypasses-usecase-layer
-no backlog.
+            → UserOutputGateway (porta de saída) → UserAdapter → UserRepository (JPA)
+            → PasswordHasherOutputGateway (porta de saída) → PasswordHasherAdapter → BCryptPasswordEncoder
+            → TokenOutputGateway (porta de saída) → JwtTokenAdapter → JwtService
+            → RefreshTokenOutputGateway (porta de saída) → RefreshTokenAdapter → RefreshTokenRepository (JPA)
 
 [AuthController]
     → LoginInputGateway (porta de entrada)
