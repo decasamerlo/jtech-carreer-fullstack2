@@ -84,7 +84,7 @@ Client                          Server
   │ <───────────────────────────── │
 ```
 
-O filtro `JwtAuthenticationFilter` (estende `OncePerRequestFilter`) executa antes do `UsernamePasswordAuthenticationFilter`. Rotas públicas (`/api/v1/auth/**`, `/doc/**`, `/actuator/**`) são ignoradas pela configuração de segurança.
+O filtro `JwtAuthenticationFilter` (estende `OncePerRequestFilter`) executa antes do `UsernamePasswordAuthenticationFilter`. Rotas públicas (`/api/v1/auth/**`, `/doc/**`, `/actuator/health`, `/actuator/info`) são ignoradas pela configuração de segurança.
 
 ---
 
@@ -163,7 +163,7 @@ O refresh token é **rotativo**: a cada uso, o anterior é revogado e um novo é
 - **Refresh token**: armazenado no banco, revogável individualmente, rotação a cada uso
 - **CSRF**: desabilitado (API stateless, sem cookies de sessão)
 - **CORS**: `CorsConfig` permite apenas `http://localhost:5173` (hardcoded) — ver `config-externalization-hygiene` no backlog para externalização
-- **Endpoint público**: apenas `/api/v1/auth/**`, `/doc/**`, `/actuator/**` — demais exigem token
+- **Endpoint público**: apenas `/api/v1/auth/**`, `/doc/**`, `/actuator/health`, `/actuator/info` — demais exigem token (incluindo demais endpoints `/actuator/**`)
 
 ---
 

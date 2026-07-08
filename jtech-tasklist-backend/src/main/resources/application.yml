@@ -23,7 +23,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: health,info
 server:
   port: ${PORT:0}
   forward-headers-strategy: framework
