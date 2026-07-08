@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.client.RestClient;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -30,13 +30,16 @@ class TasklistIntegrationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private RestClient client;
     private String user1Token;
     private String user2Token;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
+        client = RestClient.builder()
+                .defaultStatusHandler(status -> true, (request, response) -> {})
+                .build();
         jdbcTemplate.execute("DELETE FROM tasklist");
         jdbcTemplate.execute("DELETE FROM refresh_tokens");
         jdbcTemplate.execute("DELETE FROM users");
@@ -48,68 +51,76 @@ class TasklistIntegrationTest {
         return "http://localhost:" + port;
     }
 
-    private String registerAndLogin(String email, String name) throws Exception {
-        String registerBody = objectMapper.writeValueAsString(Map.of("name", name, "email", email, "password", "password123"));
-        HttpRequest registerReq = HttpRequest.newBuilder()
-                .uri(URI.create(base() + "/api/v1/auth/register"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(registerBody))
-                .build();
-        client.send(registerReq, HttpResponse.BodyHandlers.ofString());
-
-        String loginBody = objectMapper.writeValueAsString(Map.of("email", email, "password", "password123"));
-        HttpRequest loginReq = HttpRequest.newBuilder()
-                .uri(URI.create(base() + "/api/v1/auth/login"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(loginBody))
-                .build();
-        HttpResponse<String> loginResp = client.send(loginReq, HttpResponse.BodyHandlers.ofString());
-        Map<String, Object> body = objectMapper.readValue(loginResp.body(), new TypeReference<>() {});
+    private String registerAndLogin(String email, String name) {
+        send("POST", "/api/v1/auth/register", toJson(Map.of("name", name, "email", email, "password", "password123")), null);
+        ResponseEntity<String> loginResp = send("POST", "/api/v1/auth/login",
+                toJson(Map.of("email", email, "password", "password123")), null);
+        Map<String, Object> body = readValue(loginResp.getBody());
         return (String) body.get("accessToken");
     }
 
-    private HttpResponse<String> send(String method, String path, String json, String token) throws Exception {
-        HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(base() + path))
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json");
-        if (token != null) builder.header("Authorization", "Bearer " + token);
-        switch (method) {
-            case "POST" -> builder.POST(json != null ? HttpRequest.BodyPublishers.ofString(json) : HttpRequest.BodyPublishers.noBody());
-            case "GET" -> builder.GET();
-            case "PUT" -> builder.PUT(json != null ? HttpRequest.BodyPublishers.ofString(json) : HttpRequest.BodyPublishers.noBody());
-            case "DELETE" -> builder.DELETE();
+    private String toJson(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
     }
 
-    private String createList(String name, String token) throws Exception {
-        String body = objectMapper.writeValueAsString(Map.of("name", name));
-        HttpResponse<String> createResp = send("POST", "/api/v1/tasklists", body, token);
-
-        assertThat(createResp.statusCode()).isEqualTo(201);
-        Map<String, Object> created = objectMapper.readValue(createResp.body(), new TypeReference<>() {});
-        return (String) created.get("id");
+    private ResponseEntity<String> send(String method, String path, String json, String token) {
+        var spec = client.method(HttpMethod.valueOf(method))
+                .uri(base() + path)
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json");
+        if (token != null) spec = spec.header("Authorization", "Bearer " + token);
+        var withBody = (json != null) ? spec.body(json) : spec;
+        return withBody.retrieve().toEntity(String.class);
     }
 
     @SuppressWarnings("unchecked")
-    private List<Map<String, Object>> getLists(String token) throws Exception {
-        HttpResponse<String> resp = send("GET", "/api/v1/tasklists", null, token);
-        return objectMapper.readValue(resp.body(), new TypeReference<>() {});
+    private Map<String, Object> readValue(String json) {
+        try {
+            return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> readList(String json) {
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<Map<String, Object>>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String createList(String name, String token) {
+        ResponseEntity<String> createResp = send("POST", "/api/v1/tasklists",
+                toJson(Map.of("name", name)), token);
+
+        assertThat(createResp.getStatusCode().value()).isEqualTo(201);
+        Map<String, Object> created = readValue(createResp.getBody());
+        return (String) created.get("id");
+    }
+
+    private List<Map<String, Object>> getLists(String token) {
+        ResponseEntity<String> resp = send("GET", "/api/v1/tasklists", null, token);
+        return readList(resp.getBody());
     }
 
     @Test
-    void create_ShouldReturn201_WhenValidRequest() throws Exception {
-        String body = objectMapper.writeValueAsString(Map.of("name", "My Tasklist"));
-        HttpResponse<String> response = send("POST", "/api/v1/tasklists", body, user1Token);
-        assertThat(response.statusCode()).isEqualTo(201);
-        Map<String, Object> responseBody = objectMapper.readValue(response.body(), new TypeReference<>() {});
+    void create_ShouldReturn201_WhenValidRequest() {
+        ResponseEntity<String> response = send("POST", "/api/v1/tasklists",
+                toJson(Map.of("name", "My Tasklist")), user1Token);
+        assertThat(response.getStatusCode().value()).isEqualTo(201);
+        Map<String, Object> responseBody = readValue(response.getBody());
         assertThat(responseBody.get("name")).isEqualTo("My Tasklist");
         assertThat(responseBody.get("id")).isNotNull();
     }
 
     @Test
-    void findAll_ShouldReturnOnlyOwnLists() throws Exception {
+    void findAll_ShouldReturnOnlyOwnLists() {
         createList("User1 List", user1Token);
         createList("User2 List", user2Token);
 
@@ -123,44 +134,44 @@ class TasklistIntegrationTest {
     }
 
     @Test
-    void update_ShouldReturn200_WhenOwner() throws Exception {
+    void update_ShouldReturn200_WhenOwner() {
         String id = createList("Original", user1Token);
 
-        HttpResponse<String> response = send("PUT", "/api/v1/tasklists/" + id,
-                objectMapper.writeValueAsString(Map.of("name", "Updated")), user1Token);
-        assertThat(response.statusCode()).isEqualTo(200);
-        Map<String, Object> responseBody = objectMapper.readValue(response.body(), new TypeReference<>() {});
+        ResponseEntity<String> response = send("PUT", "/api/v1/tasklists/" + id,
+                toJson(Map.of("name", "Updated")), user1Token);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        Map<String, Object> responseBody = readValue(response.getBody());
         assertThat(responseBody.get("name")).isEqualTo("Updated");
     }
 
     @Test
-    void delete_ShouldReturn204_WhenOwner() throws Exception {
+    void delete_ShouldReturn204_WhenOwner() {
         String id = createList("To Delete", user1Token);
 
-        HttpResponse<String> response = send("DELETE", "/api/v1/tasklists/" + id, null, user1Token);
-        assertThat(response.statusCode()).isEqualTo(204);
+        ResponseEntity<String> response = send("DELETE", "/api/v1/tasklists/" + id, null, user1Token);
+        assertThat(response.getStatusCode().value()).isEqualTo(204);
 
         List<Map<String, Object>> remaining = getLists(user1Token);
         assertThat(remaining).isEmpty();
     }
 
     @Test
-    void update_ShouldReturn4xx_WhenNotOwner() throws Exception {
+    void update_ShouldReturn4xx_WhenNotOwner() {
         String id = createList("User1 List", user1Token);
 
-        HttpResponse<String> response = send("PUT", "/api/v1/tasklists/" + id,
-                objectMapper.writeValueAsString(Map.of("name", "Hijacked")), user2Token);
-        assertThat(response.statusCode()).isGreaterThanOrEqualTo(400).isLessThan(500);
+        ResponseEntity<String> response = send("PUT", "/api/v1/tasklists/" + id,
+                toJson(Map.of("name", "Hijacked")), user2Token);
+        assertThat(response.getStatusCode().value()).isGreaterThanOrEqualTo(400).isLessThan(500);
     }
 
     @Test
-    void delete_ShouldSoftDelete_WhenTasklistHasTasks() throws Exception {
+    void delete_ShouldSoftDelete_WhenTasklistHasTasks() {
         String listId = createList("List With Tasks", user1Token);
-        String body = objectMapper.writeValueAsString(Map.of("title", "My Task", "completed", false));
-        send("POST", "/api/v1/tasks?tasklistId=" + listId, body, user1Token);
+        String taskBody = toJson(Map.of("title", "My Task", "completed", false));
+        send("POST", "/api/v1/tasks?tasklistId=" + listId, taskBody, user1Token);
 
-        HttpResponse<String> response = send("DELETE", "/api/v1/tasklists/" + listId, null, user1Token);
-        assertThat(response.statusCode()).isEqualTo(204);
+        ResponseEntity<String> response = send("DELETE", "/api/v1/tasklists/" + listId, null, user1Token);
+        assertThat(response.getStatusCode().value()).isEqualTo(204);
 
         List<Map<String, Object>> remaining = getLists(user1Token);
         assertThat(remaining).isEmpty();
@@ -172,43 +183,43 @@ class TasklistIntegrationTest {
     }
 
     @Test
-    void getTasks_ShouldReturn400_WhenTasklistIsDeleted() throws Exception {
+    void getTasks_ShouldReturn400_WhenTasklistIsDeleted() {
         String listId = createList("List With Tasks", user1Token);
-        String body = objectMapper.writeValueAsString(Map.of("title", "My Task", "completed", false));
-        send("POST", "/api/v1/tasks?tasklistId=" + listId, body, user1Token);
+        String taskBody = toJson(Map.of("title", "My Task", "completed", false));
+        send("POST", "/api/v1/tasks?tasklistId=" + listId, taskBody, user1Token);
 
         // Delete the list
         send("DELETE", "/api/v1/tasklists/" + listId, null, user1Token);
 
         // Try to fetch tasks for the deleted list
-        HttpResponse<String> tasksResp = send("GET", "/api/v1/tasks?tasklistId=" + listId, null, user1Token);
-        assertThat(tasksResp.statusCode()).isEqualTo(400);
+        ResponseEntity<String> tasksResp = send("GET", "/api/v1/tasks?tasklistId=" + listId, null, user1Token);
+        assertThat(tasksResp.getStatusCode().value()).isEqualTo(400);
     }
 
     @Test
-    void delete_ShouldReturn4xx_WhenNotOwner() throws Exception {
+    void delete_ShouldReturn4xx_WhenNotOwner() {
         String id = createList("User1 List", user1Token);
 
-        HttpResponse<String> response = send("DELETE", "/api/v1/tasklists/" + id, null, user2Token);
-        assertThat(response.statusCode()).isGreaterThanOrEqualTo(400).isLessThan(500);
+        ResponseEntity<String> response = send("DELETE", "/api/v1/tasklists/" + id, null, user2Token);
+        assertThat(response.getStatusCode().value()).isGreaterThanOrEqualTo(400).isLessThan(500);
     }
 
     @Test
-    void create_ShouldReturn400_WhenDuplicateName() throws Exception {
+    void create_ShouldReturn400_WhenDuplicateName() {
         createList("Unique Name", user1Token);
 
-        String body = objectMapper.writeValueAsString(Map.of("name", "Unique Name"));
-        HttpResponse<String> response = send("POST", "/api/v1/tasklists", body, user1Token);
-        assertThat(response.statusCode()).isEqualTo(400);
+        ResponseEntity<String> response = send("POST", "/api/v1/tasklists",
+                toJson(Map.of("name", "Unique Name")), user1Token);
+        assertThat(response.getStatusCode().value()).isEqualTo(400);
     }
 
     @Test
-    void create_ShouldReturn400_WhenCaseInsensitiveDuplicate() throws Exception {
+    void create_ShouldReturn400_WhenCaseInsensitiveDuplicate() {
         createList("My List", user1Token);
 
-        String body = objectMapper.writeValueAsString(Map.of("name", "my list"));
-        HttpResponse<String> response = send("POST", "/api/v1/tasklists", body, user1Token);
-        assertThat(response.statusCode()).isEqualTo(400);
+        ResponseEntity<String> response = send("POST", "/api/v1/tasklists",
+                toJson(Map.of("name", "my list")), user1Token);
+        assertThat(response.getStatusCode().value()).isEqualTo(400);
     }
 
     @Disabled("H2 cannot express partial unique indexes (WHERE deleted_at IS NULL). " +
@@ -216,22 +227,22 @@ class TasklistIntegrationTest {
               "but H2's @UniqueConstraint from the entity enforces uniqueness over all rows including soft-deleted ones. " +
               "See plan Task 5 note for details.")
     @Test
-    void create_ShouldAllowSameName_AfterSoftDelete() throws Exception {
+    void create_ShouldAllowSameName_AfterSoftDelete() {
         String id = createList("Reusable Name", user1Token);
         send("DELETE", "/api/v1/tasklists/" + id, null, user1Token);
 
-        String body = objectMapper.writeValueAsString(Map.of("name", "Reusable Name"));
-        HttpResponse<String> response = send("POST", "/api/v1/tasklists", body, user1Token);
-        assertThat(response.statusCode()).isEqualTo(201);
+        ResponseEntity<String> response = send("POST", "/api/v1/tasklists",
+                toJson(Map.of("name", "Reusable Name")), user1Token);
+        assertThat(response.getStatusCode().value()).isEqualTo(201);
     }
 
     @Test
-    void update_ShouldReturn400_WhenRenamingToExistingName() throws Exception {
+    void update_ShouldReturn400_WhenRenamingToExistingName() {
         createList("First List", user1Token);
         String id = createList("Second List", user1Token);
 
-        HttpResponse<String> response = send("PUT", "/api/v1/tasklists/" + id,
-                objectMapper.writeValueAsString(Map.of("name", "First List")), user1Token);
-        assertThat(response.statusCode()).isEqualTo(400);
+        ResponseEntity<String> response = send("PUT", "/api/v1/tasklists/" + id,
+                toJson(Map.of("name", "First List")), user1Token);
+        assertThat(response.getStatusCode().value()).isEqualTo(400);
     }
 }

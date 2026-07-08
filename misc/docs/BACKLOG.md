@@ -10,9 +10,6 @@ No catch-all route exists in `router/index.ts` (no `path: '/:pathMatch(.*)*'`). 
 
 ## Quality
 
-### tests-backend — partially done
-Integration tests exist for all three controllers (`AuthIntegrationTest`, `TasklistIntegrationTest`, `TaskIntegrationTest`) and unit tests exist for Task/Tasklist use cases (`TaskUseCaseTest`, `TasklistUseCaseTest`, Mockito) and for `RegisterUserUseCase` (`RegisterUserUseCaseTest`). Remaining gaps: no unit tests for `LoginUseCase`, `RefreshUseCase`, or `JwtService` in isolation (only exercised indirectly through `AuthIntegrationTest`); no test asserts the tasklist-delete-with-tasks scenario (see Bugs); `AuthIntegrationTest` uses `RestTemplate` while `Task`/`TasklistIntegrationTest` use raw `java.net.http.HttpClient` — pick one for consistency. Depends on: backend-auth, backend-tasks.
-
 ### tests-frontend — partially done
 Solid coverage already exists across stores, services, most components, and the router guard. Remaining gaps: no `RegisterView.spec.ts` (LoginView has one; Register has equivalent validation/error-display complexity), no dedicated test for `TaskListSidebar.vue`'s own list-rendering logic (its dialogs are tested individually), and no test for `HomeView.vue`/`AboutView.vue`. Depends on: frontend-auth, frontend-lists-crud, frontend-tasks-crud, vuetify.
 
@@ -69,3 +66,4 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - exception-handler-leaks-internal-messages
 - vuetify
 - refactor-domain-mappers
+- tests-backend
