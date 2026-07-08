@@ -16,7 +16,6 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 
 Found during code review; see `misc/docs/BACKLOG.md` for full detail and tracking. Worth knowing before touching related code:
 
-- **Tasklist name uniqueness is enforced only in the frontend mock store** — the real API and DB allow duplicate tasklist names per user.
 - **Task title duplicate-detection is case-sensitive in the backend/DB but case-insensitive in the frontend** validators.
 - **`JWT_SECRET` has a real, working default value committed in `application.yml`** — any deployment that doesn't override it is using a key anyone with repo access already has.
 - **`management.endpoints.web.exposure.include: '*'`** combined with `permitAll()` on `/actuator/**` exposes all actuator endpoints unauthenticated.

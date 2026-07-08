@@ -2,6 +2,7 @@ package br.com.jtech.tasklist.config.infra.handlers;
 
 import br.com.jtech.tasklist.application.core.exceptions.InvalidCredentialsException;
 import br.com.jtech.tasklist.config.infra.exceptions.*;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -32,6 +33,25 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex) {
         ApiError error = new ApiError(HttpStatus.BAD_REQUEST);
         error.setMessage(ex.getMessage());
+        error.setTimestamp(LocalDateTime.now());
+        return buildResponseEntity(error);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        ApiError error = new ApiError(HttpStatus.BAD_REQUEST);
+        String message = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+
+        if (message.contains("uk_tasklist_user_name")) {
+            error.setMessage("A list with this name already exists");
+        } else if (message.contains("uk_users_email")) {
+            error.setMessage("Email already registered");
+        } else if (message.contains("uk_task_tasklist_title")) {
+            error.setMessage("A task with this title already exists in this list");
+        } else {
+            error.setMessage("Data integrity violation");
+        }
+
         error.setTimestamp(LocalDateTime.now());
         return buildResponseEntity(error);
     }

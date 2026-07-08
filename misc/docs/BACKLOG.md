@@ -2,14 +2,8 @@
 
 ## Bugs
 
-### tasklist-name-not-unique-in-api-mode
-The frontend mock store (`lists.ts` → `validateName()`) rejects duplicate tasklist names per user, and it's tested. The real backend has no equivalent check: `CreateTasklistUseCase`/`TasklistAdapter.create()` don't check for an existing name, and no migration adds a unique constraint on `(user_id, name)` for `tasklist` (contrast with `V007`, which adds one for `task(tasklist_id, title)`). `TasklistIntegrationTest` has no duplicate-name test. Result: in `api` mode, users can create multiple tasklists with the same name; in `mock` mode, they can't. Decide the intended behavior and enforce it consistently (use case check + DB constraint + test), matching the pattern already used for tasks.
-
 ### task-title-uniqueness-case-mismatch
 Frontend `tasks.ts` `validateTitle()` compares titles case-insensitively (`.toLowerCase()`). The backend (`existsByTasklistIdAndTitle`) and the DB (`V007` unique index on `title`) compare case-sensitively. A title the UI blocks as a duplicate ("Buy Milk" vs "buy milk") is not actually a duplicate as far as the API and database are concerned, and vice versa. Pick one semantic (recommend case-insensitive, since that matches user expectation) and apply it in the backend query (e.g. `LOWER(title)`) and the unique index, not just the frontend.
-
-### register-email-race-condition
-`RegisterUserUseCase.register()` checks `existsByEmail()` then calls `save()` — two separate statements, not atomic. Two concurrent registrations with the same email can both pass the check and both attempt to save; one will fail the `uk_users_email` DB constraint and raise a raw `DataIntegrityViolationException`, which `GlobalExceptionHandler` doesn't special-case, so it becomes a 500 instead of the intended 400 "Email already registered." Either catch the constraint violation and map it to the existing `IllegalArgumentException` path, or add an explicit handler for `DataIntegrityViolationException`.
 
 ### register-flow-bypasses-usecase-layer
 `AuthController.register()` calls `registerUserInputGateway.register(user)` and then *directly* calls `tokenOutputGateway.generateAccessToken()` and `refreshTokenOutputGateway.createRefreshToken()` from the controller. `LoginUseCase` and `RefreshUseCase`, by contrast, own their token issuance internally and return a result record — controllers just call one input port. This is an inconsistent application of the hexagonal boundary the rest of the codebase (and `AGENTS.md`) is careful about, and it means `RegisterUserUseCase` can't be unit-tested for "does registration return usable tokens" the way login can. Move token issuance into `RegisterUserUseCase` (or a new use case) so the controller only depends on input ports, matching login/refresh.
@@ -92,3 +86,5 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - frontend-tasks-crud
 - docs-readme
 - soft-delete-tasklist-cascade
+- tasklist-name-not-unique-in-api-mode
+- register-email-race-condition

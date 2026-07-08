@@ -7,6 +7,8 @@ import br.com.jtech.tasklist.application.ports.output.UpdateTasklistOutputGatewa
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 public class UpdateTasklistUseCase implements UpdateTasklistInputGateway {
 
@@ -16,11 +18,20 @@ public class UpdateTasklistUseCase implements UpdateTasklistInputGateway {
     @Override
     public Tasklist update(Tasklist tasklist, String currentUserId) {
         Tasklist existing = getTasklistsOutputGateway.findByIdAndUserId(
-                java.util.UUID.fromString(tasklist.getId()),
-                java.util.UUID.fromString(currentUserId));
+                UUID.fromString(tasklist.getId()),
+                UUID.fromString(currentUserId));
         if (existing == null) {
             throw new IllegalArgumentException("Tasklist not found or access denied");
         }
-        return updateTasklistOutputGateway.update(tasklist, java.util.UUID.fromString(currentUserId));
+        String trimmedName = tasklist.getName().trim();
+        tasklist.setName(trimmedName);
+        boolean duplicate = getTasklistsOutputGateway.existsByUserIdAndNameAndIdNot(
+                UUID.fromString(currentUserId),
+                trimmedName,
+                UUID.fromString(tasklist.getId()));
+        if (duplicate) {
+            throw new IllegalArgumentException("A list with this name already exists");
+        }
+        return updateTasklistOutputGateway.update(tasklist, UUID.fromString(currentUserId));
     }
 }
