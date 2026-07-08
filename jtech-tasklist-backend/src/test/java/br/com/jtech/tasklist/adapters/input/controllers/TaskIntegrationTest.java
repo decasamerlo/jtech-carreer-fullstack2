@@ -298,4 +298,15 @@ class TaskIntegrationTest {
         HttpResponse<String> response = send("POST", "/api/v1/tasks?tasklistId=" + otherListId, body, user1Token);
         assertThat(response.statusCode()).isEqualTo(201);
     }
+
+    @Test
+    void create_ShouldSucceed_WhenTitleReusedAfterSoftDelete() throws Exception {
+        String taskId = createTask("Buy Milk", user1TasklistId, user1Token);
+        send("DELETE", "/api/v1/tasks/" + taskId, null, user1Token);
+
+        String body = objectMapper.writeValueAsString(Map.of("title", "Buy Milk"));
+        HttpResponse<String> response = send("POST", "/api/v1/tasks?tasklistId=" + user1TasklistId, body, user1Token);
+        assertThat(response.statusCode()).isEqualTo(201);
+    }
 }
+
