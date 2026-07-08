@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import { createVuetify } from 'vuetify'
+import { useAuthStore } from '@/stores/auth'
 import RegisterView from '../RegisterView.vue'
 
 const vuetify = createVuetify()
@@ -32,6 +33,7 @@ describe('RegisterView', () => {
         ],
       },
     })
+    expect(wrapper.find('[data-testid="input-name"] input').exists()).toBe(true)
     expect(wrapper.find('input[type="email"]').exists()).toBe(true)
     expect(wrapper.find('input[type="password"]').exists()).toBe(true)
     expect(wrapper.findAll('input[type="password"]').length).toBe(2)
@@ -68,7 +70,7 @@ describe('RegisterView', () => {
         ],
       },
     })
-    await wrapper.find('input[type="text"]').setValue('John')
+    await wrapper.find('[data-testid="input-name"] input').setValue('John')
     await wrapper.find('input[type="email"]').setValue('john@example.com')
     await wrapper.findAll('input[type="password"]')[0].setValue('abc')
     await wrapper.findAll('input[type="password"]')[1].setValue('abc')
@@ -88,7 +90,7 @@ describe('RegisterView', () => {
         ],
       },
     })
-    await wrapper.find('input[type="text"]').setValue('John')
+    await wrapper.find('[data-testid="input-name"] input').setValue('John')
     await wrapper.find('input[type="email"]').setValue('john@example.com')
     await wrapper.findAll('input[type="password"]')[0].setValue('secret1')
     await wrapper.findAll('input[type="password"]')[1].setValue('secret2')
@@ -115,13 +117,14 @@ describe('RegisterView', () => {
         plugins: [vuetify, router],
       },
     })
-    await wrapper.find('input[type="text"]').setValue('John')
+    await wrapper.find('[data-testid="input-name"] input').setValue('John')
     await wrapper.find('input[type="email"]').setValue('john@example.com')
     await wrapper.findAll('input[type="password"]')[0].setValue('secret1')
     await wrapper.findAll('input[type="password"]')[1].setValue('secret1')
     await wrapper.find('form').trigger('submit.prevent')
+    await flushPromises()
 
-    const auth = (await import('@/stores/auth')).useAuthStore()
+    const auth = useAuthStore()
     expect(auth.user?.email).toBe('john@example.com')
     expect(auth.user?.name).toBe('John')
     expect(pushSpy).toHaveBeenCalledWith({ name: 'home' })
@@ -139,7 +142,7 @@ describe('RegisterView', () => {
         },
       ],
     })
-    const auth = (await import('@/stores/auth')).useAuthStore()
+    const auth = useAuthStore()
     vi.spyOn(auth, 'register').mockRejectedValue(new Error('Email already registered'))
 
     const wrapper = mount(RegisterView, {
@@ -147,11 +150,12 @@ describe('RegisterView', () => {
         plugins: [vuetify, router],
       },
     })
-    await wrapper.find('input[type="text"]').setValue('John')
+    await wrapper.find('[data-testid="input-name"] input').setValue('John')
     await wrapper.find('input[type="email"]').setValue('john@example.com')
     await wrapper.findAll('input[type="password"]')[0].setValue('secret1')
     await wrapper.findAll('input[type="password"]')[1].setValue('secret1')
     await wrapper.find('form').trigger('submit.prevent')
+    await flushPromises()
 
     expect(wrapper.text()).toContain('Email already registered')
   })

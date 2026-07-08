@@ -72,6 +72,7 @@ async function handleSubmit() {
                 v-model="name"
                 label="Name"
                 prepend-icon="mdi-account"
+                data-testid="input-name"
                 :error-messages="errors.name"
                 @input="errors.name = ''"
               />

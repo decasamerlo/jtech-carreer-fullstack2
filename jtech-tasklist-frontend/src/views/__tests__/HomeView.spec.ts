@@ -3,11 +3,8 @@ import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import { createVuetify } from 'vuetify'
+import { useAuthStore } from '@/stores/auth'
 import HomeView from '../HomeView.vue'
-
-async function useAuthStore() {
-  return (await import('@/stores/auth')).useAuthStore()
-}
 
 const vuetify = createVuetify()
 
@@ -22,8 +19,8 @@ describe('HomeView', () => {
     component: { template: '<div>Lists</div>' },
   }
 
-  it('greets the signed-in user by name and email', async () => {
-    const auth = await useAuthStore()
+  it('greets the signed-in user by name and email', () => {
+    const auth = useAuthStore()
     auth.user = { name: 'John', email: 'john@example.com', role: 'ROLE_USER' }
 
     const wrapper = mount(HomeView, {
@@ -43,7 +40,7 @@ describe('HomeView', () => {
   })
 
   it('calls logout and redirects to login on sign out', async () => {
-    const auth = await useAuthStore()
+    const auth = useAuthStore()
     auth.user = { name: 'John', email: 'john@example.com', role: 'ROLE_USER' }
 
     const router = createRouter({

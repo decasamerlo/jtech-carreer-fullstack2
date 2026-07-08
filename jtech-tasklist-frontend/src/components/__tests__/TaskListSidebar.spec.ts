@@ -44,7 +44,7 @@ describe('TaskListSidebar', () => {
     store.createList('Personal')
 
     const wrapper = mountSidebar()
-    const items = wrapper.findAll('.v-list-item--link')
+    const items = wrapper.findAll('[data-testid="list-item"]')
     expect(items.length).toBe(2)
     expect(wrapper.text()).toContain('Work')
     expect(wrapper.text()).toContain('Personal')
@@ -64,7 +64,7 @@ describe('TaskListSidebar', () => {
     const spy = vi.spyOn(store, 'setActiveList')
 
     const wrapper = mountSidebar()
-    const items = wrapper.findAll('.v-list-item--link')
+    const items = wrapper.findAll('[data-testid="list-item"]')
     await items[0].trigger('click')
     expect(spy).toHaveBeenCalledWith(workId)
   })
@@ -77,13 +77,13 @@ describe('TaskListSidebar', () => {
     store.setActiveList(personalId!)
 
     const wrapper = mountSidebar()
-    const items = wrapper.findAll('.v-list-item.v-list-item--link')
+    const items = wrapper.findAll('[data-testid="list-item"]')
     expect(items[1].classes()).toContain('v-list-item--active')
   })
 
   it('opens the create dialog when the plus button is clicked', async () => {
     const wrapper = mountSidebar()
-    const plusBtn = wrapper.findAll('button').find((b) => b.find('.mdi-plus').exists())!
+    const plusBtn = wrapper.find('[data-testid="btn-create-list"]')
     await plusBtn.trigger('click')
     await flushSidebar(wrapper)
     expect(wrapper.findComponent({ name: 'CreateListDialog' }).props('open')).toBe(true)
@@ -94,7 +94,7 @@ describe('TaskListSidebar', () => {
     store.createList('Work')
 
     const wrapper = mountSidebar()
-    const renameBtn = wrapper.findAll('button').find((b) => b.find('.mdi-pencil').exists())!
+    const renameBtn = wrapper.find('[data-testid="btn-rename"]')
     await renameBtn.trigger('click')
     await flushSidebar(wrapper)
     const renameDialog = wrapper.findComponent({ name: 'RenameListDialog' })
@@ -107,7 +107,7 @@ describe('TaskListSidebar', () => {
     store.createList('Work')
 
     const wrapper = mountSidebar()
-    const deleteBtn = wrapper.findAll('button').find((b) => b.find('.mdi-delete').exists())!
+    const deleteBtn = wrapper.find('[data-testid="btn-delete"]')
     await deleteBtn.trigger('click')
     await flushSidebar(wrapper)
     const deleteDialog = wrapper.findComponent({ name: 'DeleteListDialog' })

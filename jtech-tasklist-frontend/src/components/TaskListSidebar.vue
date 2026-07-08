@@ -47,7 +47,7 @@ function handleDelete() {
     <template v-slot:prepend>
       <v-list-item title="Lists" class="text-h6">
         <template v-slot:append>
-          <v-btn icon="mdi-plus" size="small" color="primary" @click="showCreateDialog = true" />
+          <v-btn icon="mdi-plus" size="small" color="primary" data-testid="btn-create-list" @click="showCreateDialog = true" />
         </template>
       </v-list-item>
       <v-divider />
@@ -58,14 +58,15 @@ function handleDelete() {
         v-for="list in store.lists"
         :key="list.id"
         :active="list.id === store.activeListId"
+        data-testid="list-item"
         @click="store.setActiveList(list.id)"
       >
         <template v-slot:title>
           <span class="text-truncate">{{ list.name }}</span>
         </template>
         <template v-slot:append>
-          <v-btn icon="mdi-pencil" size="x-small" variant="text" @click.stop="openRenameDialog(list.id)" />
-          <v-btn icon="mdi-delete" size="x-small" variant="text" color="error" @click.stop="openDeleteDialog(list.id)" />
+          <v-btn icon="mdi-pencil" size="x-small" variant="text" data-testid="btn-rename" @click.stop="openRenameDialog(list.id)" />
+          <v-btn icon="mdi-delete" size="x-small" variant="text" color="error" data-testid="btn-delete" @click.stop="openDeleteDialog(list.id)" />
         </template>
       </v-list-item>
     </v-list>
