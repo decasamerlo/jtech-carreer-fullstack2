@@ -11,33 +11,58 @@ const showCreateDialog = ref(false)
 const showRenameDialog = ref(false)
 const showDeleteDialog = ref(false)
 const selectedListId = ref<string | null>(null)
+const createError = ref('')
+const renameError = ref('')
+const deleteError = ref('')
 
 const selectedList = computed(() => store.lists.find((l) => l.id === selectedListId.value))
 
-function handleCreate(name: string) {
-  store.createList(name)
+function openCreateDialog() {
+  createError.value = ''
+  showCreateDialog.value = true
+}
+
+async function handleCreate(name: string) {
+  createError.value = ''
+  try {
+    await store.createList(name)
+    showCreateDialog.value = false
+  } catch (e: unknown) {
+    createError.value = e instanceof Error ? e.message : 'Failed to create list'
+  }
 }
 
 function openRenameDialog(id: string) {
   selectedListId.value = id
+  renameError.value = ''
   showRenameDialog.value = true
 }
 
-function handleRename(name: string) {
-  if (selectedListId.value) {
-    store.renameList(selectedListId.value, name)
+async function handleRename(name: string) {
+  if (!selectedListId.value) return
+  renameError.value = ''
+  try {
+    await store.renameList(selectedListId.value, name)
+    showRenameDialog.value = false
+  } catch (e: unknown) {
+    renameError.value = e instanceof Error ? e.message : 'Failed to rename list'
   }
 }
 
 function openDeleteDialog(id: string) {
   selectedListId.value = id
+  deleteError.value = ''
   showDeleteDialog.value = true
 }
 
-function handleDelete() {
-  if (selectedListId.value) {
-    store.deleteList(selectedListId.value)
+async function handleDelete() {
+  if (!selectedListId.value) return
+  deleteError.value = ''
+  try {
+    await store.deleteList(selectedListId.value)
     showDeleteDialog.value = false
+  } catch (e: unknown) {
+    deleteError.value = e instanceof Error ? e.message : 'Failed to delete list'
   }
 }
 </script>
@@ -47,7 +72,7 @@ function handleDelete() {
     <template v-slot:prepend>
       <v-list-item title="Lists" class="text-h6">
         <template v-slot:append>
-          <v-btn icon="mdi-plus" size="small" color="primary" data-testid="btn-create-list" @click="showCreateDialog = true" />
+          <v-btn icon="mdi-plus" size="small" color="primary" data-testid="btn-create-list" @click="openCreateDialog" />
         </template>
       </v-list-item>
       <v-divider />
@@ -77,18 +102,21 @@ function handleDelete() {
 
     <CreateListDialog
       :open="showCreateDialog"
+      :error="createError"
       @close="showCreateDialog = false"
       @create="handleCreate"
     />
     <RenameListDialog
       :open="showRenameDialog"
       :current-name="selectedList?.name ?? ''"
+      :error="renameError"
       @close="showRenameDialog = false"
       @rename="handleRename"
     />
     <DeleteListDialog
       :open="showDeleteDialog"
       :list-name="selectedList?.name ?? ''"
+      :error="deleteError"
       @close="showDeleteDialog = false"
       @delete="handleDelete"
     />

@@ -58,4 +58,13 @@ describe('DeleteListDialog', () => {
     deleteBtn!.click()
     expect(wrapper.emitted('delete')).toHaveLength(1)
   })
+
+  it('displays the async error passed via the error prop', () => {
+    mount(DeleteListDialog, {
+      props: { open: true, listName: 'My List', error: 'Failed to delete list' },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
+    })
+    expect(document.body.textContent).toContain('Failed to delete list')
+  })
 })

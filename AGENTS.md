@@ -31,7 +31,7 @@ Found during code review; see `misc/docs/BACKLOG.md` for full detail and trackin
   - `./gradlew build` — build (includes tests)
   - `./gradlew jacocoTestReport` — coverage report
 - **Database**: PostgreSQL via env vars (`DS_URL`, `DS_PORT`, `DS_DATABASE`, `DS_USER`, `DS_PASS`). Defaults to `localhost:5432/jtech_tasklist`
-- **Tests**: H2 in-memory, config in `src/test/resources/application-test.properties`, `ddl-auto=create`, Flyway disabled. Suite: `AuthIntegrationTest`, `TasklistIntegrationTest`, `TaskIntegrationTest` (full-stack integration via HTTP), `RegisterUserUseCaseTest`, `TaskUseCaseTest`, `TasklistUseCaseTest` (unit, Mockito).
+- **Tests**: H2 in-memory, config in `src/test/resources/application-test.properties`, `ddl-auto=create`, Flyway disabled. Suite: `AuthIntegrationTest`, `TasklistIntegrationTest`, `TaskIntegrationTest`, `ActuatorSecurityIntegrationTest` (full-stack integration via HTTP with `RestClient`); `RegisterUserUseCaseTest`, `LoginUseCaseTest`, `RefreshUseCaseTest`, `TaskUseCaseTest`, `TasklistUseCaseTest` (unit, Mockito); `JwtServiceTest`, `GlobalExceptionHandlerTest` (infra unit). Note: `AuthIntegrationTest` has no coverage for the `POST /api/v1/auth/refresh` flow yet (see `refresh-token-integration-tests` in backlog).
 - **Test frameworks**: JUnit Platform Suite 6.1.1, AssertJ 3.27.7, Bean Matchers 0.14, Spring Security Test
 - **Server port**: `PORT` env var (default `0` = random). `server.forward-headers-strategy: framework`
 - **Swagger**: enabled at `/doc/tasklist/v1/api.html`, API docs at `/doc/tasklist/v3/api-documents`
@@ -40,7 +40,7 @@ Found during code review; see `misc/docs/BACKLOG.md` for full detail and trackin
 - **Audit base classes**: `application/core/domains/BaseDomain.java` (pure domain POJO with `T id` + audit + soft-delete helpers), `adapters/output/repositories/entities/BaseEntity.java` (`@MappedSuperclass` with Spring Data JPA Auditing annotations + `@Version`), `config/infra/audit/AuditorAwareImpl.java`, `config/infra/audit/JpaAuditingConfig.java`.
 - **Profile**: `PROFILE` env var (default `dev`)
 - **Publishing**: Nexus at `nexus.jtech.com.br`, requires `MAVEN_REPO_USER`/`MAVEN_REPO_PASS`
-- **Docker compose**: PostgreSQL 18.4 service in `docker-compose.yml` (for local dev, run from `jtech-tasklist-backend/`) — covers the DB only; no Dockerfile for the app itself yet (see `prod-docker-compose` in backlog)
+- **Docker compose**: PostgreSQL 18 service (`postgres:18`) in `docker-compose.yml` (for local dev, run from `jtech-tasklist-backend/`) — covers the DB only; no Dockerfile for the app itself yet (see `prod-docker-compose` in backlog)
 - **Mockserver**: Flask-based in `mockserver/http-mockserver/` (Python, `requirements.txt`)
 - **Lombok**: used project-wide (compileOnly + annotationProcessor)
 

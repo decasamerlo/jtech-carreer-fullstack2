@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{ open: boolean; listName: string }>()
+defineProps<{ open: boolean; listName: string; error?: string }>()
 const emit = defineEmits<{ close: []; delete: [] }>()
 </script>
 
@@ -11,6 +11,7 @@ const emit = defineEmits<{ close: []; delete: [] }>()
         <p class="text-body-1">
           Are you sure you want to delete "<strong>{{ listName }}</strong>"? This action cannot be undone.
         </p>
+        <v-alert v-if="error" type="error" density="compact" class="mt-3">{{ error }}</v-alert>
         <v-card-actions class="pa-0 pt-2">
           <v-spacer />
           <v-btn variant="text" @click="emit('close')">Cancel</v-btn>

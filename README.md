@@ -64,7 +64,7 @@ Sistema TODO List multi-usuário com arquitetura hexagonal no backend e componen
 │  │                  Adaptadores Input                   │  │
 │  │      ┌──────────────────────────────────────┐        │  │
 │  │      │         Controllers REST             │        │  │
-│  │      │         /tasklist/*                  │        │  │
+│  │      │         /api/v1/*                    │        │  │
 │  │      └───────────────┬──────────────────────┘        │  │
 │  └──────────────────────┼───────────────────────────────┘  │
 │                         │                                  │
@@ -154,13 +154,13 @@ Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos 
     ├── vite.config.ts                 # Configuração do Vite
     ├── tsconfig.json                  # TypeScript config (app, node, vitest)
     ├── eslint.config.ts               # ESLint flat config
-    ├── .prettierrc                    # Configuração do Prettier
+    ├── .prettierrc.json               # Configuração do Prettier
     ├── env.d.ts                       # Declarações de tipos globais
     ├── index.html                     # Entry point HTML
     └── src/
-        ├── main.ts                    # Bootstrap: Pinia + Router
+        ├── main.ts                    # Bootstrap: Pinia + Router + Vuetify
         ├── App.vue                    # Componente raiz
-        ├── assets/                    # CSS global e imagens
+        ├── plugins/                   # Registro do Vuetify
         ├── components/                # Componentes reutilizáveis + __tests__
         ├── router/                    # Configuração de rotas
         ├── services/                  # Serviços HTTP (axios + interceptores)
@@ -275,25 +275,21 @@ npm run build                       # Type-check + build
 
 ## Pontos de Atenção Conhecidos
 
-Problemas e lacunas identificados durante revisão de código. O backlog completo com prioridades e dependências está em [`misc/docs/BACKLOG.md`](./misc/docs/BACKLOG.md).
+Problemas e lacunas em aberto identificados em revisão de código. O backlog completo com prioridades e dependências está em [`misc/docs/BACKLOG.md`](./misc/docs/BACKLOG.md) — esta seção resume os itens de maior impacto.
 
-### Bugs
-
-| ID | Resumo | Impacto |
-|---|---|---|
-| `tasklist-delete-is-hard-delete-no-cascade` | Exclusão de tasklist faz `DELETE` real (hard delete) em vez de soft delete como tasks. FK sem `ON DELETE` causa `500` ao excluir tasklist que possui tarefas. | Perda de trilha de auditoria + erro 500 para o usuário |
-| `task-title-uniqueness-case-mismatch` | Frontend compara títulos case-insensitively, backend/DB compara case-sensitively. Mesma tarefa pode ser duplicada ou bloqueada dependendo do modo. | Validação inconsistente |
 ### Segurança
 
 | ID | Resumo | Recomendação |
 |---|---|---|
-| ~~`jwt-secret-default-committed`~~ | ✅ Resolvido — default removido de `application.yml`, movido para `application-dev.yml` | Falha rápida em ambientes sem `JWT_SECRET` configurado |
-| `actuator-fully-exposed` | `management.endpoints.web.exposure.include: '*'` + `permitAll()` em `/actuator/**` expõe todos os endpoints sem autenticação. | Restringir a `health,info` ou exigir role admin |
-| ~~`exception-handler-leaks-internal-messages`~~ | ✅ Resolvido — `debugMessage` removido do `ApiError`; exceções não capturadas são logadas no servidor | Nunca mais expõe detalhes internos ao cliente |
+| `register-email-enumeration` | `RegisterUserUseCase` devolve o email na mensagem de erro de duplicidade (`"Email already registered: ..."`). | Usar mensagem genérica (como o handler de `DataIntegrityViolation` já faz) |
+| `jwt-tokens-in-localstorage` | Tokens JWT persistidos em `localStorage` (trade-off do Bearer via header). | Endurecer contra XSS: cookie `HttpOnly` para o refresh token e/ou CSP |
+| `auth-rate-limiting` | Sem rate limiting em `/api/v1/auth/login` e `/register`. | Proteção barata contra brute-force e spam de registro |
 
-### Pendências de Stack
+### Lacunas de Spec / Qualidade
 
-- **Vuetify / Material Design** — Único item obrigatório da especificação (`SPECIFICATION.md`) ainda não implementado. A UI atual funciona mas não usa a biblioteca de componentes exigida.
+- `delete-list-dependency-check` — a exclusão de lista pede confirmação, mas não verifica nem avisa sobre as tarefas contidas (a spec pede "confirmação **e verificação de dependências**").
+- `error-mapping` — casos de "não encontrado"/"não é seu" retornam `400` em vez de `404`/`403`.
+- `admin-role-seeding` — `ROLE_ADMIN` é referenciado em `SecurityConfig` mas nenhum fluxo o concede.
 
 ---
 
@@ -309,7 +305,7 @@ O frontend utiliza Composition API com `<script setup>` para aproveitar inferên
 
 ### Separação Domínio vs Persistência
 
-`TasklistEntity` (entidade JPA com anotações `@Entity`, `@Table`) é distinta de `Tasklist` (domínio puro). O adapter de saída (`CreateTasklistAdapter`) realiza o mapeamento entre ambas, permitindo evolução independente do schema de banco e do modelo de domínio.
+`TasklistEntity` (entidade JPA com anotações `@Entity`, `@Table`) é distinta de `Tasklist` (domínio puro). O adapter de saída (`TasklistAdapter`, via `TasklistMapper`) realiza o mapeamento entre ambas, permitindo evolução independente do schema de banco e do modelo de domínio.
 
 ### Autenticação JWT com Refresh Token
 
@@ -345,7 +341,7 @@ Projeto partiu de um skeleton mínimo.
 ### Implementado
 
 - **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator, **autenticação JWT com refresh token** (registro, login, refresh), CORS config, **validação de duplicatas** — tarefas (única por lista via constraint + use case) e nomes de tasklist (únicos por usuário, case-insensitive, via constraint + use case), **migrações Flyway** para evolução de schema
-- **Frontend**: Vue 3 + Vite + Pinia + Vue Router + ESLint + Vitest (scaffold padrão), **autenticação com flag mock/api** (login e registro assíncronos com axios), tela de cadastro, **CRUD de listas com persistência** (criar, renomear, excluir com confirmação, navegação entre listas, sidebar), **CRUD de tarefas** (adicionar, editar, remover, marcar concluída com validação de duplicatas e campos obrigatórios, dual mode mock/API), **camada de serviços HTTP** com interceptor de refresh token
+- **Frontend**: Vue 3 + Vite + Pinia + Vue Router + ESLint + Vitest, **UI em Vuetify 4 (Material Design 3)** + @mdi/font, **autenticação com flag mock/api** (login e registro assíncronos com axios), tela de cadastro, **CRUD de listas com persistência** (criar, renomear, excluir com confirmação, navegação entre listas, sidebar), **CRUD de tarefas** (adicionar, editar, remover, marcar concluída com validação de duplicatas e campos obrigatórios, dual mode mock/API), **camada de serviços HTTP** com interceptor de refresh token
 
 ### Próximos passos
 
