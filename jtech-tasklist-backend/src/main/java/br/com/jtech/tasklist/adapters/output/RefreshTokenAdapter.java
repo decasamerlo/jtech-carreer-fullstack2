@@ -59,22 +59,7 @@ public class RefreshTokenAdapter implements RefreshTokenOutputGateway {
     public Optional<User> findValidUserByToken(String token) {
         return refreshTokenRepository.findByToken(token)
             .filter(RefreshTokenEntity::isValid)
-            .map(entity -> {
-                var userEntity = entity.getUser();
-                return User.builder()
-                    .id(userEntity.getId().toString())
-                    .name(userEntity.getName())
-                    .email(userEntity.getEmail())
-                    .password(userEntity.getPassword())
-                    .role(userEntity.getRole())
-                    .createdAt(userEntity.getCreatedAt())
-                    .createdBy(userEntity.getCreatedBy() != null ? userEntity.getCreatedBy().toString() : null)
-                    .updatedAt(userEntity.getUpdatedAt())
-                    .updatedBy(userEntity.getUpdatedBy() != null ? userEntity.getUpdatedBy().toString() : null)
-                    .deletedAt(userEntity.getDeletedAt())
-                    .deletedBy(userEntity.getDeletedBy() != null ? userEntity.getDeletedBy().toString() : null)
-                    .build();
-            });
+            .map(entity -> UserMapper.toDomain(entity.getUser()));
     }
 
     @Override

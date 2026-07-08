@@ -102,7 +102,7 @@ Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos 
 - **`adapters/input/`** — Controladores REST que traduzem requisições HTTP em chamadas aos casos de uso
 - **`adapters/output/`** — Implementações concretas de repositórios JPA, mapeamento entre entidades de domínio e entidades de persistência
    - Entidades JPA estendem `BaseEntity<T>` (`@MappedSuperclass` com Spring Data Auditing, `@Version` para lock otimista, mesmos campos de auditoria + soft delete)
-- **`config/`** — Configuração de beans, swagger, exception handlers globais e utilitários
+- **`config/`** — Configuração de beans, swagger, exception handlers (`handlers/`), event listeners (`listeners/`), utils, auditoria JPA (`audit/`)
 
 ### Frontend: Arquitetura Reativa com Composição
 
@@ -138,8 +138,11 @@ Separa o núcleo da aplicação (regras de negócio) dos detalhes tecnológicos 
 │       │   │   ├── application/
 │       │   │   │   ├── core/          # Domínios puros e casos de uso (regras de negócio)
 │       │   │   │   └── ports/         # Interfaces de entrada e saída (contratos)
-│       │   │   ├── config/infra/audit/   # AuditorAwareImpl, JpaAuditingConfig
-│       │   │   └── config/            # Beans, swagger, exception handlers, utils
+│       │   │   ├── config/infra/audit/     # AuditorAwareImpl, JpaAuditingConfig
+│       │   │   ├── config/infra/handlers/  # GlobalExceptionHandler
+│       │   │   ├── config/infra/listeners/ # ReadyEventListener
+│       │   │   ├── config/infra/utils/     # Jsons, GenId
+│       │   │   └── config/              # Beans, swagger, utils
 │       │   └── resources/
 │       │       ├── application.yml     # Configuração principal
 │       │       └── db/migration/       # Migrações Flyway (V###__description.sql)
