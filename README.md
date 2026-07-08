@@ -283,7 +283,7 @@ Problemas e lacunas identificados durante revisão de código. O backlog complet
 |---|---|---|
 | ~~`jwt-secret-default-committed`~~ | ✅ Resolvido — default removido de `application.yml`, movido para `application-dev.yml` | Falha rápida em ambientes sem `JWT_SECRET` configurado |
 | `actuator-fully-exposed` | `management.endpoints.web.exposure.include: '*'` + `permitAll()` em `/actuator/**` expõe todos os endpoints sem autenticação. | Restringir a `health,info` ou exigir role admin |
-| `exception-handler-leaks-internal-messages` | `debugMessage` expõe `ex.getLocalizedMessage()` de exceções em todos os profiles, incluindo produção. | Condicionar ao profile `dev` ou remover da resposta |
+| ~~`exception-handler-leaks-internal-messages`~~ | ✅ Resolvido — `debugMessage` removido do `ApiError`; exceções não capturadas são logadas no servidor | Nunca mais expõe detalhes internos ao cliente |
 
 ### Pendências de Stack
 

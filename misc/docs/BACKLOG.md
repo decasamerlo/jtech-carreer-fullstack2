@@ -1,10 +1,5 @@
 # Backlog
 
-## Security
-
-### exception-handler-leaks-internal-messages
-`GlobalExceptionHandler.handleGeneral()` sets `debugMessage` to `ex.getLocalizedMessage()` for *any* uncaught exception, in every profile, including whatever a database driver or library decides to put in an exception message. Gate `debugMessage` behind a non-prod profile check (or drop it from the client response entirely and rely on server-side logging).
-
 ## Features
 
 ### vuetify
@@ -78,3 +73,4 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - register-flow-bypasses-usecase-layer
 - jwt-secret-default-committed
 - actuator-fully-exposed
+- exception-handler-leaks-internal-messages

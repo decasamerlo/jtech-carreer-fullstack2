@@ -2,6 +2,7 @@ package br.com.jtech.tasklist.config.infra.handlers;
 
 import br.com.jtech.tasklist.application.core.exceptions.InvalidCredentialsException;
 import br.com.jtech.tasklist.config.infra.exceptions.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -25,7 +27,6 @@ public class GlobalExceptionHandler {
         error.setMessage("Error on request");
         error.setTimestamp(LocalDateTime.now());
         error.setSubErrors(subErrors(ex));
-        error.setDebugMessage(ex.getLocalizedMessage());
         return buildResponseEntity(error);
     }
 
@@ -82,10 +83,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex) {
+        log.error("Unhandled exception", ex);
         ApiError error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR);
         error.setMessage("Internal server error");
         error.setTimestamp(LocalDateTime.now());
-        error.setDebugMessage(ex.getLocalizedMessage());
         return buildResponseEntity(error);
     }
 
