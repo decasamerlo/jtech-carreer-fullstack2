@@ -46,7 +46,7 @@ describe('RenameListDialog', () => {
   })
 
   it('shows error for empty name', async () => {
-    const wrapper = mount(RenameListDialog, {
+    mount(RenameListDialog, {
       props: { open: true, currentName: 'Old Name' },
       global: { plugins: [vuetify] },
       attachTo: document.body,
@@ -76,5 +76,31 @@ describe('RenameListDialog', () => {
     await new Promise(process.nextTick)
     expect(wrapper.emitted('rename')).toHaveLength(1)
     expect(wrapper.emitted('rename')![0]).toEqual(['New Name'])
+  })
+
+  it('displays the async error passed via the error prop', () => {
+    mount(RenameListDialog, {
+      props: { open: true, currentName: 'Old Name', error: 'A list with this name already exists' },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
+    })
+    expect(document.body.textContent).toContain('A list with this name already exists')
+  })
+
+  it('does not emit close on valid submit (parent closes on success)', async () => {
+    const wrapper = mount(RenameListDialog, {
+      props: { open: true, currentName: 'Old Name' },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
+    })
+    const input = document.body.querySelector('input') as HTMLInputElement
+    input.value = 'New Name'
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+    await new Promise(process.nextTick)
+    const submitBtn = document.body.querySelector('button[type="submit"]') as HTMLElement
+    submitBtn.click()
+    await new Promise(process.nextTick)
+    expect(wrapper.emitted('rename')).toHaveLength(1)
+    expect(wrapper.emitted('close')).toBeUndefined()
   })
 })

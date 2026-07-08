@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import type { VueWrapper } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { setActivePinia, createPinia } from 'pinia'
@@ -113,5 +113,37 @@ describe('TaskListSidebar', () => {
     const deleteDialog = wrapper.findComponent({ name: 'DeleteListDialog' })
     expect(deleteDialog.props('open')).toBe(true)
     expect(deleteDialog.props('listName')).toBe('Work')
+  })
+
+  it('keeps the create dialog open and surfaces the error when create fails', async () => {
+    const store = useListsStore()
+    store.createList('Work') // pre-existing list -> duplicate will be rejected
+
+    const wrapper = mountSidebar()
+    await wrapper.find('[data-testid="btn-create-list"]').trigger('click')
+    await flushSidebar(wrapper)
+
+    const dialog = wrapper.findComponent({ name: 'CreateListDialog' })
+    dialog.vm.$emit('create', 'Work')
+    await flushPromises()
+    await flushSidebar(wrapper)
+
+    expect(dialog.props('open')).toBe(true)
+    expect(dialog.props('error')).toContain('already exists')
+  })
+
+  it('closes the create dialog on successful create', async () => {
+    useListsStore()
+
+    const wrapper = mountSidebar()
+    await wrapper.find('[data-testid="btn-create-list"]').trigger('click')
+    await flushSidebar(wrapper)
+
+    const dialog = wrapper.findComponent({ name: 'CreateListDialog' })
+    dialog.vm.$emit('create', 'Personal')
+    await flushPromises()
+    await flushSidebar(wrapper)
+
+    expect(dialog.props('open')).toBe(false)
   })
 })
