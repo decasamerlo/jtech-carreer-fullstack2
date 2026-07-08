@@ -332,6 +332,10 @@ O frontend suporta dois modos de operação (`VITE_AUTH_MODE`):
 
 Os dois modos são caminhos de código separados por método de store (não uma abstração compartilhada), o que significa que correções em um modo devem ser verificadas no outro.
 
+### Soft-Delete com Cascata Preguiçosa (Lazy Cascade)
+
+A exclusão de tasklist é soft (`markAsDeleted` + `save`), não um hard delete no banco. As tarefas filhas não são atualizadas em massa; em vez disso, cada caso de uso de consulta/mutação de tarefa verifica se a tasklist pai ainda existe antes de prosseguir. Isso significa que cada `GET /tasks?tasklistId=X` custa dois round-trips ao banco (verificação de existência da tasklist + busca das tarefas) em vez de um — uma troca deliberada do design de cascata preguiçosa na escala desta aplicação.
+
 ---
 
 ## Status do Projeto

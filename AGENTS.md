@@ -57,6 +57,7 @@ Found during code review; see `misc/docs/BACKLOG.md` for full detail and trackin
   - `npm run lint` — ESLint flat config (`eslint.config.ts`)
   - `npm run format` — Prettier (`src/` only, semi:false, singleQuote:true, printWidth:100)
 - **Path alias**: `@` → `./src`
+- **Env file**: Copy `.env.example` to `.env` to configure local development; `.env` is gitignored — never commit it.
 - **Auth mode**: `VITE_AUTH_MODE=mock|api` env var (default `mock`). `api` mode POSTs to backend via axios. API base URL from `VITE_API_BASE_URL` (default `http://localhost:8080`). Mock mode does not support authenticated API calls beyond login/register (no tokens attached to requests). The two modes are separate code paths per store method, not a shared implementation — they have already drifted apart in a couple of places (see Known Issues), so a fix in one mode isn't automatically a fix in the other.
 - **Services layer**: `src/services/api.ts` (axios instance with Bearer token interceptor and refresh-on-401 queueing), `src/services/authApi.ts` (login/register API calls), `src/services/tasklistApi.ts` (CRUD operations for tasklists in API mode), `src/services/taskApi.ts` (CRUD operations for tasks in API mode)
 - **Vuetify**: 4.1.x — Material Design 3 component framework

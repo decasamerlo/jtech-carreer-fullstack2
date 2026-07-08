@@ -162,7 +162,7 @@ O refresh token é **rotativo**: a cada uso, o anterior é revogado e um novo é
 - **Access token**: assinado HMAC-SHA256, sem armazenamento no servidor
 - **Refresh token**: armazenado no banco, revogável individualmente, rotação a cada uso
 - **CSRF**: desabilitado (API stateless, sem cookies de sessão)
-- **CORS**: `CorsConfig` permite apenas `http://localhost:5173` (hardcoded) — ver `config-externalization-hygiene` no backlog para externalização
+- **CORS**: `CorsConfig` permite origens configuradas via `app.cors.allowed-origins` (environment variable `APP_CORS_ALLOWED_ORIGINS`, default `http://localhost:5173`)
 - **Endpoint público**: apenas `/api/v1/auth/**`, `/doc/**`, `/actuator/health`, `/actuator/info` — demais exigem token (incluindo demais endpoints `/actuator/**`)
 
 ---
