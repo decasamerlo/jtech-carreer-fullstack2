@@ -35,6 +35,8 @@ logging:
   file:
     name: ./logs/${spring.application.name}.log
 app:
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
   jwt:
     secret: ${JWT_SECRET}
     access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
