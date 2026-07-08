@@ -2,9 +2,6 @@
 
 ## Security
 
-### jwt-secret-default-committed
-`application.yml` ships `secret: ${JWT_SECRET:404a6141c4e2b0e5a1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3}`. The README already warns not to use this in production, but the warning doesn't stop the value from being a real, working HMAC key sitting in version control — anyone with repo access can forge valid access tokens against any deployment that forgets to override `JWT_SECRET`. Prefer no default at all (fail fast on missing config outside `dev`/`test` profiles), or move the fallback into `application-dev.yml` only.
-
 ### actuator-fully-exposed
 `management.endpoints.web.exposure.include: '*'` plus `SecurityConfig` permitting all of `/actuator/**` unauthenticated exposes every actuator endpoint with no auth. Today that's mostly `health`/`info`, but the config as written also opens the door to anything added later (`env`, `beans`, `heapdump`, etc.) without anyone having to remember to lock it down. Restrict `exposure.include` to `health,info` and/or require an authenticated admin role for the rest.
 
@@ -82,3 +79,4 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - register-email-race-condition
 - task-title-uniqueness-case-mismatch
 - register-flow-bypasses-usecase-layer
+- jwt-secret-default-committed

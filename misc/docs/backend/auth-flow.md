@@ -148,11 +148,11 @@ O refresh token é **rotativo**: a cada uso, o anterior é revogado e um novo é
 
 | Variável | Padrão | Obrigatório | Descrição |
 |---|---|---|---|
-| `JWT_SECRET` | *(padrão no yml — apenas dev)* | ✅ Produção | Chave HMAC para assinatura (min 256-bit) |
+| `JWT_SECRET` | *(definido em `application-dev.yml`)* | ✅ Produção | Chave HMAC para assinatura (min 256-bit) — **obrigatório via env var** |
 | `JWT_ACCESS_EXPIRATION` | `900000` (15 min) | ❌ | Duração do access token em ms |
 | `JWT_REFRESH_EXPIRATION` | `604800000` (7 dias) | ❌ | Duração do refresh token em ms |
 
-**⚠️ A chave `JWT_SECRET` deve ser uma string de no mínimo 32 caracteres (256 bits para HMAC-SHA256). O valor padrão é apenas para desenvolvimento local — **nunca utilize em produção**.**
+**⚠️ A chave `JWT_SECRET` é obrigatória em produção e deve ser configurada via variável de ambiente. O valor em `application-dev.yml` é apenas para desenvolvimento local — **nunca utilize em produção** (mínimo 32 caracteres / 256 bits para HMAC-SHA256).**
 
 ---
 
