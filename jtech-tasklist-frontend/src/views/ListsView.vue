@@ -114,36 +114,37 @@ async function handleToggleComplete(id: string) {
 </script>
 
 <template>
-  <div class="lists-layout">
+  <v-layout class="lists-layout">
     <TaskListSidebar />
-    <main class="content">
-      <header class="content-header">
-        <router-link :to="{ name: 'home' }" class="back-link">&larr; Home</router-link>
-        <button class="sign-out-btn" @click="handleLogout">Sign Out</button>
-      </header>
-      <div v-if="!listsStore.initialized" class="loading-state">
-        <p>Loading...</p>
-      </div>
-      <div v-else-if="listsStore.activeList" class="list-content">
-        <div class="list-header">
-          <h1>{{ listsStore.activeList.name }}</h1>
-          <button class="add-task-btn" @click="openCreateDialog">+ Add Task</button>
+    <v-main class="content">
+      <v-app-bar flat border>
+        <v-btn icon="mdi-home" variant="text" :to="{ name: 'home' }" />
+        <v-spacer />
+        <v-btn color="error" variant="text" @click="handleLogout">Sign Out</v-btn>
+      </v-app-bar>
+
+      <v-container v-if="!listsStore.initialized" class="fill-height">
+        <v-row align="center" justify="center">
+          <v-col cols="auto"><v-progress-circular indeterminate /></v-col>
+        </v-row>
+      </v-container>
+
+      <v-container v-else-if="listsStore.activeList" fluid>
+        <div class="d-flex align-center mb-2">
+          <h1 class="text-h4 flex-grow-1">{{ listsStore.activeList.name }}</h1>
+          <v-btn color="primary" prepend-icon="mdi-plus" @click="openCreateDialog">
+            Add Task
+          </v-btn>
         </div>
-        <p class="list-meta">
-          Created:
-          {{
-            listsStore.activeList.createdAt
-              ? new Date(listsStore.activeList.createdAt).toLocaleDateString()
-              : '—'
-          }}
+        <p class="text-body-2 text-grey mb-4">
+          Created: {{ listsStore.activeList.createdAt ? new Date(listsStore.activeList.createdAt).toLocaleDateString() : '—' }}
         </p>
-        <p v-if="toggleError" class="toggle-error" role="alert" aria-live="polite">
+
+        <v-alert v-if="toggleError" type="error" closable class="mb-4" @click:close="toggleError = ''">
           {{ toggleError }}
-        </p>
-        <div v-if="tasksStore.tasksForActiveList.length === 0" class="empty-tasks">
-          <p>No tasks yet. Add one to get started!</p>
-        </div>
-        <ul v-else class="task-list">
+        </v-alert>
+
+        <v-list v-if="tasksStore.tasksForActiveList.length > 0">
           <TaskItem
             v-for="task in tasksStore.tasksForActiveList"
             :key="task.id"
@@ -152,13 +153,22 @@ async function handleToggleComplete(id: string) {
             @edit="openEditDialog"
             @delete="openDeleteDialog"
           />
-        </ul>
-      </div>
-      <div v-else class="empty-state">
-        <h2>Select a list</h2>
-        <p>Choose a list from the sidebar or create a new one.</p>
-      </div>
-    </main>
+        </v-list>
+        <div v-else class="d-flex flex-column align-center justify-center pa-6 text-grey">
+          <p class="text-h6">No tasks yet</p>
+          <p class="text-body-2">Add one to get started!</p>
+        </div>
+      </v-container>
+
+      <v-container v-else class="fill-height">
+        <v-row align="center" justify="center">
+          <v-col cols="auto" class="text-center">
+            <h2 class="text-h5">Select a list</h2>
+            <p class="text-body-1 text-grey">Choose a list from the sidebar or create a new one.</p>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
 
     <CreateTaskDialog
       :open="showCreateDialog"
@@ -180,110 +190,5 @@ async function handleToggleComplete(id: string) {
       @close="showDeleteDialog = false"
       @delete="handleDeleteTask"
     />
-  </div>
+  </v-layout>
 </template>
-
-<style scoped>
-.lists-layout {
-  display: flex;
-  height: 100vh;
-}
-
-.content {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-.content-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.back-link {
-  color: hsla(160, 100%, 37%, 1);
-  text-decoration: none;
-}
-
-.back-link:hover {
-  text-decoration: underline;
-}
-
-.sign-out-btn {
-  padding: 0.4rem 0.8rem;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.list-header h1 {
-  margin: 0;
-}
-
-.add-task-btn {
-  padding: 0.5rem 1rem;
-  background-color: hsla(160, 100%, 37%, 1);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-.list-meta {
-  color: #888;
-  font-size: 0.875rem;
-  margin-bottom: 1.5rem;
-}
-
-.toggle-error {
-  color: #e74c3c;
-  font-size: 0.875rem;
-  margin-bottom: 1.5rem;
-}
-
-.task-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.empty-tasks,
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  padding: 3rem 0;
-}
-
-.empty-state {
-  height: 100%;
-}
-
-.empty-state h2 {
-  margin-bottom: 0.5rem;
-}
-
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #888;
-}
-</style>

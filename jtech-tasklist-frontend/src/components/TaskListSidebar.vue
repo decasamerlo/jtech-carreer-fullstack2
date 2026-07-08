@@ -43,30 +43,36 @@ function handleDelete() {
 </script>
 
 <template>
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <h2>Lists</h2>
-      <button class="add-btn" @click="showCreateDialog = true">+</button>
-    </div>
+  <v-navigation-drawer permanent>
+    <template v-slot:prepend>
+      <v-list-item title="Lists" class="text-h6">
+        <template v-slot:append>
+          <v-btn icon="mdi-plus" size="small" color="primary" @click="showCreateDialog = true" />
+        </template>
+      </v-list-item>
+      <v-divider />
+    </template>
 
-    <ul class="list-items">
-      <li
+    <v-list v-if="store.lists.length > 0">
+      <v-list-item
         v-for="list in store.lists"
         :key="list.id"
-        :class="{ active: list.id === store.activeListId }"
+        :active="list.id === store.activeListId"
         @click="store.setActiveList(list.id)"
       >
-        <span class="list-name">{{ list.name }}</span>
-        <div class="list-actions">
-          <button class="action-btn" @click.stop="openRenameDialog(list.id)">Rename</button>
-          <button class="action-btn delete" @click.stop="openDeleteDialog(list.id)">Delete</button>
-        </div>
-      </li>
-    </ul>
+        <template v-slot:title>
+          <span class="text-truncate">{{ list.name }}</span>
+        </template>
+        <template v-slot:append>
+          <v-btn icon="mdi-pencil" size="x-small" variant="text" @click.stop="openRenameDialog(list.id)" />
+          <v-btn icon="mdi-delete" size="x-small" variant="text" color="error" @click.stop="openDeleteDialog(list.id)" />
+        </template>
+      </v-list-item>
+    </v-list>
 
-    <p v-if="store.lists.length === 0" class="empty-state">
+    <v-list-item v-else class="text-center text-grey text-caption font-italic">
       No lists yet. Create one to get started!
-    </p>
+    </v-list-item>
 
     <CreateListDialog
       :open="showCreateDialog"
@@ -85,103 +91,5 @@ function handleDelete() {
       @close="showDeleteDialog = false"
       @delete="handleDelete"
     />
-  </aside>
+  </v-navigation-drawer>
 </template>
-
-<style scoped>
-.sidebar {
-  width: 250px;
-  border-right: 1px solid var(--color-border);
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.sidebar-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-}
-
-.add-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 4px;
-  background-color: hsla(160, 100%, 37%, 1);
-  color: white;
-  font-size: 1.25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.list-items {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.list-items li {
-  padding: 0.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.25rem;
-}
-
-.list-items li:hover {
-  background-color: #f5f5f5;
-}
-
-.list-items li.active {
-  background-color: hsla(160, 100%, 37%, 0.1);
-}
-
-.list-name {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.list-actions {
-  display: none;
-  gap: 0.25rem;
-}
-
-.list-items li:hover .list-actions {
-  display: flex;
-}
-
-.action-btn {
-  padding: 0.25rem 0.5rem;
-  border: none;
-  border-radius: 4px;
-  background: #eee;
-  cursor: pointer;
-  font-size: 0.75rem;
-}
-
-.action-btn.delete {
-  background: #e74c3c;
-  color: white;
-}
-
-.empty-state {
-  color: #888;
-  text-align: center;
-  font-style: italic;
-}
-</style>

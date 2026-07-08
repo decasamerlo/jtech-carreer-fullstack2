@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
+import { createVuetify } from 'vuetify'
 import LoginView from '../LoginView.vue'
+
+const vuetify = createVuetify()
 
 describe('LoginView', () => {
   beforeEach(() => {
@@ -21,6 +24,7 @@ describe('LoginView', () => {
     const wrapper = mount(LoginView, {
       global: {
         plugins: [
+          vuetify,
           createRouter({
             history: createWebHistory(),
             routes: baseRoutes,
@@ -37,6 +41,7 @@ describe('LoginView', () => {
     const wrapper = mount(LoginView, {
       global: {
         plugins: [
+          vuetify,
           createRouter({
             history: createWebHistory(),
             routes: baseRoutes,
@@ -65,7 +70,7 @@ describe('LoginView', () => {
 
     const wrapper = mount(LoginView, {
       global: {
-        plugins: [router],
+        plugins: [vuetify, router],
       },
     })
     await wrapper.find('input[type="email"]').setValue('john@example.com')
@@ -94,7 +99,7 @@ describe('LoginView', () => {
 
     const wrapper = mount(LoginView, {
       global: {
-        plugins: [router],
+        plugins: [vuetify, router],
       },
     })
     await wrapper.find('input[type="email"]').setValue('john@example.com')

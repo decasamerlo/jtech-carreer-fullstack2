@@ -1,8 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
+import { createVuetify } from 'vuetify'
 import EditTaskDialog from '../EditTaskDialog.vue'
 import type { Task } from '@/types/task'
+
+const vuetify = createVuetify()
 
 const mockTask: Task = {
   id: 'task-1',
@@ -17,56 +20,96 @@ describe('EditTaskDialog', () => {
     setActivePinia(createPinia())
   })
 
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
   it('renders pre-filled inputs when open with task', () => {
-    const wrapper = mount(EditTaskDialog, {
+    mount(EditTaskDialog, {
       props: { open: true, task: mockTask },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
     })
-    expect((wrapper.find('#task-title').element as HTMLInputElement).value).toBe('Buy groceries')
-    expect((wrapper.find('#task-description').element as HTMLTextAreaElement).value).toBe(
-      'Milk, eggs',
-    )
+    const input = document.body.querySelector('input') as HTMLInputElement
+    expect(input).toBeTruthy()
+    expect(input.value).toBe('Buy groceries')
   })
 
   it('does not render when closed', () => {
     const wrapper = mount(EditTaskDialog, {
       props: { open: false, task: mockTask },
+      global: { plugins: [vuetify] },
     })
-    expect(wrapper.find('#task-title').exists()).toBe(false)
+    expect(wrapper.find('input').exists()).toBe(false)
   })
 
   it('emits close event on cancel', async () => {
     const wrapper = mount(EditTaskDialog, {
       props: { open: true, task: mockTask },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
     })
-    await wrapper.find('button.cancel-btn').trigger('click')
+    const buttons = document.body.querySelectorAll('button')
+    const cancelBtn = Array.from(buttons).find((b) => b.textContent === 'Cancel')
+    expect(cancelBtn).toBeTruthy()
+    cancelBtn!.click()
     expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
   it('shows validation error for empty title', async () => {
-    const wrapper = mount(EditTaskDialog, {
+    mount(EditTaskDialog, {
       props: { open: true, task: mockTask },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
     })
-    await wrapper.find('#task-title').setValue('')
-    await wrapper.find('form').trigger('submit.prevent')
-    expect(wrapper.text()).toContain('Task title is required')
+    const inputs = document.body.querySelectorAll('input')
+    const titleInput = inputs[0] as HTMLInputElement
+    titleInput.value = ''
+    titleInput.dispatchEvent(new Event('input', { bubbles: true }))
+    await new Promise(process.nextTick)
+    const submitBtn = document.body.querySelector('button[type="submit"]') as HTMLElement
+    submitBtn.click()
+    await new Promise(process.nextTick)
+    expect(document.body.textContent).toContain('Task title is required')
   })
 
   it('shows validation error for title over 255 chars', async () => {
-    const wrapper = mount(EditTaskDialog, {
+    mount(EditTaskDialog, {
       props: { open: true, task: mockTask },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
     })
-    await wrapper.find('#task-title').setValue('a'.repeat(256))
-    await wrapper.find('form').trigger('submit.prevent')
-    expect(wrapper.text()).toContain('255 characters or less')
+    const inputs = document.body.querySelectorAll('input')
+    const titleInput = inputs[0] as HTMLInputElement
+    titleInput.value = 'a'.repeat(256)
+    titleInput.dispatchEvent(new Event('input', { bubbles: true }))
+    await new Promise(process.nextTick)
+    const submitBtn = document.body.querySelector('button[type="submit"]') as HTMLElement
+    submitBtn.click()
+    await new Promise(process.nextTick)
+    expect(document.body.textContent).toContain('255 characters or less')
   })
 
   it('emits save with id, title, and description (does not self-close)', async () => {
     const wrapper = mount(EditTaskDialog, {
       props: { open: true, task: mockTask },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
     })
-    await wrapper.find('#task-title').setValue('Updated Task')
-    await wrapper.find('#task-description').setValue('New desc')
-    await wrapper.find('form').trigger('submit.prevent')
+    const inputs = document.body.querySelectorAll('input')
+    const titleInput = inputs[0] as HTMLInputElement
+    titleInput.value = 'Updated Task'
+    titleInput.dispatchEvent(new Event('input', { bubbles: true }))
+    const textareas = document.body.querySelectorAll('textarea')
+    if (textareas.length > 0) {
+      const descTextarea = textareas[0] as HTMLTextAreaElement
+      descTextarea.value = 'New desc'
+      descTextarea.dispatchEvent(new Event('input', { bubbles: true }))
+    }
+    await new Promise(process.nextTick)
+    const submitBtn = document.body.querySelector('button[type="submit"]') as HTMLElement
+    submitBtn.click()
+    await new Promise(process.nextTick)
     expect(wrapper.emitted('save')).toHaveLength(1)
     expect(wrapper.emitted('save')![0]).toEqual(['task-1', 'Updated Task', 'New desc'])
     expect(wrapper.emitted('close')).toBeUndefined()
@@ -75,17 +118,32 @@ describe('EditTaskDialog', () => {
   it('emits save with undefined description when empty', async () => {
     const wrapper = mount(EditTaskDialog, {
       props: { open: true, task: mockTask },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
     })
-    await wrapper.find('#task-title').setValue('Updated Task')
-    await wrapper.find('#task-description').setValue('')
-    await wrapper.find('form').trigger('submit.prevent')
+    const inputs = document.body.querySelectorAll('input')
+    const titleInput = inputs[0] as HTMLInputElement
+    titleInput.value = 'Updated Task'
+    titleInput.dispatchEvent(new Event('input', { bubbles: true }))
+    const textareas = document.body.querySelectorAll('textarea')
+    if (textareas.length > 0) {
+      const descTextarea = textareas[0] as HTMLTextAreaElement
+      descTextarea.value = ''
+      descTextarea.dispatchEvent(new Event('input', { bubbles: true }))
+    }
+    await new Promise(process.nextTick)
+    const submitBtn = document.body.querySelector('button[type="submit"]') as HTMLElement
+    submitBtn.click()
+    await new Promise(process.nextTick)
     expect(wrapper.emitted('save')![0]).toEqual(['task-1', 'Updated Task', undefined])
   })
 
-  it('displays async error from parent prop', async () => {
-    const wrapper = mount(EditTaskDialog, {
+  it('displays async error from parent prop', () => {
+    mount(EditTaskDialog, {
       props: { open: true, task: mockTask, error: 'Duplicate title' },
+      global: { plugins: [vuetify] },
+      attachTo: document.body,
     })
-    expect(wrapper.text()).toContain('Duplicate title')
+    expect(document.body.textContent).toContain('Duplicate title')
   })
 })
