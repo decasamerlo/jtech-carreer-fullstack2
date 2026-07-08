@@ -2,9 +2,6 @@
 
 ## Security
 
-### actuator-fully-exposed
-`management.endpoints.web.exposure.include: '*'` plus `SecurityConfig` permitting all of `/actuator/**` unauthenticated exposes every actuator endpoint with no auth. Today that's mostly `health`/`info`, but the config as written also opens the door to anything added later (`env`, `beans`, `heapdump`, etc.) without anyone having to remember to lock it down. Restrict `exposure.include` to `health,info` and/or require an authenticated admin role for the rest.
-
 ### exception-handler-leaks-internal-messages
 `GlobalExceptionHandler.handleGeneral()` sets `debugMessage` to `ex.getLocalizedMessage()` for *any* uncaught exception, in every profile, including whatever a database driver or library decides to put in an exception message. Gate `debugMessage` behind a non-prod profile check (or drop it from the client response entirely and rely on server-side logging).
 
@@ -80,3 +77,4 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - task-title-uniqueness-case-mismatch
 - register-flow-bypasses-usecase-layer
 - jwt-secret-default-committed
+- actuator-fully-exposed

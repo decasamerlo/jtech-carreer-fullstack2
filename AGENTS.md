@@ -16,7 +16,6 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 
 Found during code review; see `misc/docs/BACKLOG.md` for full detail and tracking. Worth knowing before touching related code:
 
-- **`management.endpoints.web.exposure.include: '*'`** combined with `permitAll()` on `/actuator/**` exposes all actuator endpoints unauthenticated.
 - Mock-mode and API-mode logic in the frontend stores (`tasks.ts`, `lists.ts`) is hand-duplicated per operation — when fixing a bug in one mode, check whether the other mode has the same bug.
 
 ## Backend (`jtech-tasklist-backend/`)
