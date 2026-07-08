@@ -6,12 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
@@ -24,18 +24,13 @@ class AuthIntegrationTest {
     @LocalServerPort
     private int port;
 
-    private RestTemplate restTemplate;
+    private RestClient client;
 
     @BeforeEach
     void setUp() {
-        restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new ResponseErrorHandler() {
-            public boolean hasError(ClientHttpResponse response) {
-                return false;
-            }
-            public void handleError(ClientHttpResponse response) {
-            }
-        });
+        client = RestClient.builder()
+                .defaultStatusHandler(status -> true, (request, response) -> {})
+                .build();
     }
 
     private String url(String path) {
@@ -43,8 +38,14 @@ class AuthIntegrationTest {
     }
 
     @SuppressWarnings("unchecked")
-    private ResponseEntity<Map> post(String path, Object request) {
-        return restTemplate.postForEntity(url(path), request, Map.class);
+    private ResponseEntity<Map> send(String method, String path, Object body) {
+        return client.method(HttpMethod.valueOf(method))
+                .uri(url(path))
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .body(body)
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<Map>() {});
     }
 
     @Test
@@ -55,7 +56,7 @@ class AuthIntegrationTest {
             .password("password123")
             .build();
 
-        ResponseEntity<Map> response = post("/api/v1/auth/register", request);
+        ResponseEntity<Map> response = send("POST", "/api/v1/auth/register", request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
@@ -72,10 +73,10 @@ class AuthIntegrationTest {
             .password("password123")
             .build();
 
-        ResponseEntity<Map> first = post("/api/v1/auth/register", request);
+        ResponseEntity<Map> first = send("POST", "/api/v1/auth/register", request);
         assertThat(first.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        ResponseEntity<Map> second = post("/api/v1/auth/register", request);
+        ResponseEntity<Map> second = send("POST", "/api/v1/auth/register", request);
         assertThat(second.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -87,7 +88,7 @@ class AuthIntegrationTest {
             .password("password123")
             .build();
 
-        ResponseEntity<Map> response = post("/api/v1/auth/register", request);
+        ResponseEntity<Map> response = send("POST", "/api/v1/auth/register", request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -100,7 +101,7 @@ class AuthIntegrationTest {
             .password("12345")
             .build();
 
-        ResponseEntity<Map> response = post("/api/v1/auth/register", request);
+        ResponseEntity<Map> response = send("POST", "/api/v1/auth/register", request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -113,14 +114,14 @@ class AuthIntegrationTest {
             .password("password123")
             .build();
 
-        post("/api/v1/auth/register", registerRequest);
+        send("POST", "/api/v1/auth/register", registerRequest);
 
         LoginRequest loginRequest = LoginRequest.builder()
             .email("login@example.com")
             .password("password123")
             .build();
 
-        ResponseEntity<Map> response = post("/api/v1/auth/login", loginRequest);
+        ResponseEntity<Map> response = send("POST", "/api/v1/auth/login", loginRequest);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
@@ -137,14 +138,14 @@ class AuthIntegrationTest {
             .password("password123")
             .build();
 
-        post("/api/v1/auth/register", registerRequest);
+        send("POST", "/api/v1/auth/register", registerRequest);
 
         LoginRequest loginRequest = LoginRequest.builder()
             .email("wrongpw@example.com")
             .password("wrongpassword")
             .build();
 
-        ResponseEntity<Map> response = post("/api/v1/auth/login", loginRequest);
+        ResponseEntity<Map> response = send("POST", "/api/v1/auth/login", loginRequest);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -156,7 +157,7 @@ class AuthIntegrationTest {
             .password("password123")
             .build();
 
-        ResponseEntity<Map> response = post("/api/v1/auth/login", loginRequest);
+        ResponseEntity<Map> response = send("POST", "/api/v1/auth/login", loginRequest);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }

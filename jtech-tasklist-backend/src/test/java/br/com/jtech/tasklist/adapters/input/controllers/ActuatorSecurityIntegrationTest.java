@@ -4,12 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
@@ -22,33 +22,36 @@ class ActuatorSecurityIntegrationTest {
     @LocalServerPort
     private int port;
 
-    private RestTemplate restTemplate;
+    private RestClient client;
 
     @BeforeEach
     void setUp() {
-        restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new ResponseErrorHandler() {
-            public boolean hasError(ClientHttpResponse response) {
-                return false;
-            }
-            public void handleError(ClientHttpResponse response) {
-            }
-        });
+        client = RestClient.builder()
+                .defaultStatusHandler(status -> true, (request, response) -> {})
+                .build();
     }
 
     private String url(String path) {
         return "http://localhost:" + port + path;
     }
 
+    @SuppressWarnings("unchecked")
+    private ResponseEntity<Map> get(String path) {
+        return client.method(HttpMethod.GET)
+                .uri(url(path))
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<Map>() {});
+    }
+
     @Test
     void health_ShouldBeAccessibleWithoutAuth() {
-        ResponseEntity<Map> response = restTemplate.getForEntity(url("/actuator/health"), Map.class);
+        ResponseEntity<Map> response = get("/actuator/health");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     void nonHealthActuatorEndpoint_ShouldNotBeAccessibleWithoutAuth() {
-        ResponseEntity<Map> response = restTemplate.getForEntity(url("/actuator/env"), Map.class);
+        ResponseEntity<Map> response = get("/actuator/env");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }
