@@ -14,8 +14,11 @@ import org.springframework.context.annotation.Configuration;
 public class AuthUseCaseConfig {
 
     @Bean
-    public RegisterUserUseCase registerUserUseCase(UserOutputGateway userOutputGateway) {
-        return new RegisterUserUseCase(userOutputGateway);
+    public RegisterUserUseCase registerUserUseCase(UserOutputGateway userOutputGateway,
+                                                    PasswordHasherOutputGateway passwordHasherOutputGateway,
+                                                    TokenOutputGateway tokenOutputGateway,
+                                                    RefreshTokenOutputGateway refreshTokenOutputGateway) {
+        return new RegisterUserUseCase(userOutputGateway, passwordHasherOutputGateway, tokenOutputGateway, refreshTokenOutputGateway);
     }
 
     @Bean

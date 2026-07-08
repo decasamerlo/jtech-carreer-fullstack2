@@ -1,7 +1,8 @@
 package br.com.jtech.tasklist.application.ports.input;
 
-import br.com.jtech.tasklist.application.core.domains.User;
-
 public interface RegisterUserInputGateway {
-    User register(User user);
+    RegisterResult register(RegisterCommand command);
+
+    record RegisterCommand(String name, String email, String password) {}
+    record RegisterResult(String accessToken, String refreshToken) {}
 }

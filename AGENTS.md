@@ -33,7 +33,7 @@ Found during code review; see `misc/docs/BACKLOG.md` for full detail and trackin
   - `./gradlew build` — build (includes tests)
   - `./gradlew jacocoTestReport` — coverage report
 - **Database**: PostgreSQL via env vars (`DS_URL`, `DS_PORT`, `DS_DATABASE`, `DS_USER`, `DS_PASS`). Defaults to `localhost:5432/jtech_tasklist`
-- **Tests**: H2 in-memory, config in `src/test/resources/application-test.properties`, `ddl-auto=create`, Flyway disabled. Suite: `AuthIntegrationTest`, `TasklistIntegrationTest`, `TaskIntegrationTest` (full-stack integration via HTTP), `TaskUseCaseTest`, `TasklistUseCaseTest` (unit, Mockito).
+- **Tests**: H2 in-memory, config in `src/test/resources/application-test.properties`, `ddl-auto=create`, Flyway disabled. Suite: `AuthIntegrationTest`, `TasklistIntegrationTest`, `TaskIntegrationTest` (full-stack integration via HTTP), `RegisterUserUseCaseTest`, `TaskUseCaseTest`, `TasklistUseCaseTest` (unit, Mockito).
 - **Test frameworks**: JUnit Platform Suite 6.1.1, AssertJ 3.27.7, Bean Matchers 0.14, Spring Security Test
 - **Server port**: `PORT` env var (default `0` = random). `server.forward-headers-strategy: framework`
 - **Swagger**: enabled at `/doc/tasklist/v1/api.html`, API docs at `/doc/tasklist/v3/api-documents`
