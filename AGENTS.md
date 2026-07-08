@@ -16,7 +16,6 @@ Two-project monorepo: `jtech-tasklist-backend/` (Spring Boot) and `jtech-tasklis
 
 Found during code review; see `misc/docs/BACKLOG.md` for full detail and tracking. Worth knowing before touching related code:
 
-- **`JWT_SECRET` has a real, working default value committed in `application.yml`** — any deployment that doesn't override it is using a key anyone with repo access already has.
 - **`management.endpoints.web.exposure.include: '*'`** combined with `permitAll()` on `/actuator/**` exposes all actuator endpoints unauthenticated.
 - Mock-mode and API-mode logic in the frontend stores (`tasks.ts`, `lists.ts`) is hand-duplicated per operation — when fixing a bug in one mode, check whether the other mode has the same bug.
 

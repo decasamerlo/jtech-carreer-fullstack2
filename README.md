@@ -204,7 +204,7 @@ PORT=8080 ./gradlew bootRun
 | `DS_DATABASE` | `jtech_tasklist` | Nome do banco |
 | `DS_USER` | `postgres` | Usuário do banco |
 | `DS_PASS` | `postgres` | Senha do banco |
-| `JWT_SECRET` | *(padrão no yml)* | Chave HMAC para assinatura JWT (min 256-bit) — **ver nota de segurança abaixo** |
+| `JWT_SECRET` | *(apenas dev)* | Chave HMAC para assinatura JWT (min 256-bit) — definido em `application-dev.yml` para dev; **obrigatório via env var em outros ambientes** |
 | `JWT_ACCESS_EXPIRATION` | `900000` (15 min) | Duração do access token em ms |
 | `JWT_REFRESH_EXPIRATION` | `604800000` (7 dias) | Duração do refresh token em ms |
 
@@ -281,7 +281,7 @@ Problemas e lacunas identificados durante revisão de código. O backlog complet
 
 | ID | Resumo | Recomendação |
 |---|---|---|
-| `jwt-secret-default-committed` | `JWT_SECRET` tem valor padrão real commitado em `application.yml`. Qualquer deploy sem override usa uma chave conhecida. | Remover default ou restringir ao profile `dev` |
+| ~~`jwt-secret-default-committed`~~ | ✅ Resolvido — default removido de `application.yml`, movido para `application-dev.yml` | Falha rápida em ambientes sem `JWT_SECRET` configurado |
 | `actuator-fully-exposed` | `management.endpoints.web.exposure.include: '*'` + `permitAll()` em `/actuator/**` expõe todos os endpoints sem autenticação. | Restringir a `health,info` ou exigir role admin |
 | `exception-handler-leaks-internal-messages` | `debugMessage` expõe `ex.getLocalizedMessage()` de exceções em todos os profiles, incluindo produção. | Condicionar ao profile `dev` ou remover da resposta |
 
