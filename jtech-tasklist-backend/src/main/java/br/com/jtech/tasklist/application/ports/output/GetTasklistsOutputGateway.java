@@ -9,4 +9,6 @@ public interface GetTasklistsOutputGateway {
     List<Tasklist> findAllByUserId(UUID userId);
     Tasklist findByIdAndUserId(UUID id, UUID userId);
     boolean existsByTasklistIdAndUserId(UUID tasklistId, UUID userId);
+    boolean existsByUserIdAndName(UUID userId, String name);
+    boolean existsByUserIdAndNameAndIdNot(UUID userId, String name, UUID excludeId);
 }

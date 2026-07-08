@@ -13,7 +13,7 @@ public class TasklistUseCaseConfig {
 
     @Bean
     public CreateTasklistUseCase createTasklistUseCase(TasklistAdapter tasklistAdapter) {
-        return new CreateTasklistUseCase(tasklistAdapter);
+        return new CreateTasklistUseCase(tasklistAdapter, tasklistAdapter);
     }
 
     @Bean

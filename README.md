@@ -276,9 +276,7 @@ Problemas e lacunas identificados durante revisão de código. O backlog complet
 | ID | Resumo | Impacto |
 |---|---|---|
 | `tasklist-delete-is-hard-delete-no-cascade` | Exclusão de tasklist faz `DELETE` real (hard delete) em vez de soft delete como tasks. FK sem `ON DELETE` causa `500` ao excluir tasklist que possui tarefas. | Perda de trilha de auditoria + erro 500 para o usuário |
-| `tasklist-name-not-unique-in-api-mode` | Frontend mock impede nomes duplicados de tasklist, mas backend/DB não valida. Comportamento inconsistente entre modos mock e API. | Listas duplicadas em produção |
 | `task-title-uniqueness-case-mismatch` | Frontend compara títulos case-insensitively, backend/DB compara case-sensitively. Mesma tarefa pode ser duplicada ou bloqueada dependendo do modo. | Validação inconsistente |
-| `register-email-race-condition` | `existsByEmail()` + `save()` não é atômico. Registro simultâneo com mesmo email pode gerar 500 ao violar constraint de unicidade. | Erro 500 em vez de 400 |
 | `register-flow-bypasses-usecase-layer` | `AuthController.register()` gera tokens diretamente em vez de delegar ao use case, diferente de login/refresh. Viola a fronteira hexagonal. | Inconsistência arquitetural |
 
 ### Segurança
@@ -338,7 +336,7 @@ Projeto partiu de um skeleton mínimo.
 
 ### Implementado
 
-- **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator, **autenticação JWT com refresh token** (registro, login, refresh), CORS config, **validação de duplicatas em tarefas** (única por lista via constraint + use case), **migrações Flyway** para evolução de schema
+- **Backend**: Spring Boot com estrutura hexagonal de pacotes, Swagger, exception handler, Actuator, **autenticação JWT com refresh token** (registro, login, refresh), CORS config, **validação de duplicatas** — tarefas (única por lista via constraint + use case) e nomes de tasklist (únicos por usuário, case-insensitive, via constraint + use case), **migrações Flyway** para evolução de schema
 - **Frontend**: Vue 3 + Vite + Pinia + Vue Router + ESLint + Vitest (scaffold padrão), **autenticação com flag mock/api** (login e registro assíncronos com axios), tela de cadastro, **CRUD de listas com persistência** (criar, renomear, excluir com confirmação, navegação entre listas, sidebar), **CRUD de tarefas** (adicionar, editar, remover, marcar concluída com validação de duplicatas e campos obrigatórios, dual mode mock/API), **camada de serviços HTTP** com interceptor de refresh token
 
 ### Próximos passos
