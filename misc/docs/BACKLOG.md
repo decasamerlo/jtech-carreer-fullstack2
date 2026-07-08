@@ -10,9 +10,6 @@ No catch-all route exists in `router/index.ts` (no `path: '/:pathMatch(.*)*'`). 
 
 ## Quality
 
-### refactor-domain-mappers — partially done
-`TaskMapper`/`TasklistMapper` already exist as standalone classes and are used by `TaskAdapter`/`TasklistAdapter` — that part of this item is complete. Still open: `UserAdapter` keeps `toEntity`/`toDomain` as private inline methods, and `RefreshTokenAdapter.findValidUserByToken()` duplicates the exact same `User`-building logic inline a second time (a straightforward DRY violation — extract a `UserMapper`). Also still open: `Tasklist.java` (domain) imports `br.com.jtech.tasklist.adapters.input.protocols.TasklistRequest` for a static factory method `Tasklist.of(TasklistRequest)` — this is the DIP violation this item was written for, and as far as we can tell `TasklistController` doesn't even call it (it builds `Tasklist` via the builder directly), so it looks like dead code on top of being a layering violation. Remove or relocate it. Depends on: audit-base-class.
-
 ### tests-backend — partially done
 Integration tests exist for all three controllers (`AuthIntegrationTest`, `TasklistIntegrationTest`, `TaskIntegrationTest`) and unit tests exist for Task/Tasklist use cases (`TaskUseCaseTest`, `TasklistUseCaseTest`, Mockito) and for `RegisterUserUseCase` (`RegisterUserUseCaseTest`). Remaining gaps: no unit tests for `LoginUseCase`, `RefreshUseCase`, or `JwtService` in isolation (only exercised indirectly through `AuthIntegrationTest`); no test asserts the tasklist-delete-with-tasks scenario (see Bugs); `AuthIntegrationTest` uses `RestTemplate` while `Task`/`TasklistIntegrationTest` use raw `java.net.http.HttpClient` — pick one for consistency. Depends on: backend-auth, backend-tasks.
 
@@ -27,7 +24,6 @@ Two related gaps: (1) `CorsConfig` hardcodes `http://localhost:5173` as the only
 
 ### codebase-hygiene-cleanup
 Grab-bag of small, low-risk cleanups found during review — batch them into one pass:
-- Fix package/directory mismatches: `ReadyEventListener.java` lives under `.../config/infra/utils/` but declares `package ...config.infra.listeners`; `GlobalExceptionHandler.java` lives under `.../config/infra/utils/` but declares `package ...config.infra.handlers`. Compiles fine today, but breaks the folder-mirrors-package convention every other class follows.
 - `CreateTasklistUseCase`, `CreateTasklistInputGateway`, `CreateTasklistOutputGateway` all carry stale Javadoc referring to a class called `TasklistUseCase`/`TasklistOutputGateway`/`TasklistInputGateway` (copy-paste leftover) — update or remove the headers.
 - Remove starter-kit "Copyright (c) J-Tech Solucoes em Informatica... confidential and proprietary" headers on `ReadyEventListener`, `ApiError`, `ApiSubError`, `ApiValidationError`, `Jsons`, `GenId` — these came from a template and don't apply to this repo.
 - `OpenAPI30Configuration` has a placeholder title (`"???"`) and a hardcoded third-party contact email (`helder.puia@veolia.com`) left over from the same template — replace with real project info.
@@ -72,3 +68,4 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - actuator-fully-exposed
 - exception-handler-leaks-internal-messages
 - vuetify
+- refactor-domain-mappers

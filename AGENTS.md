@@ -21,7 +21,7 @@ Found during code review; see `misc/docs/BACKLOG.md` for full detail and trackin
 ## Backend (`jtech-tasklist-backend/`)
 
 - **Stack**: Spring Boot 4.1.0, Java 25, Gradle 9.6.1, Spring Data JPA + Hibernate
-- **Architecture**: Hexagonal (`application/` → core/domains/ports/usecases, `adapters/` → input/controllers, output/repositories, `config/`)
+- **Architecture**: Hexagonal (`application/` → core/domains/ports/usecases, `adapters/` → input/controllers, output/repositories + mappers, `config/` → infra/handlers/listeners/utils/audit)
 - **Dependencies**: Spring Web, Spring Data JPA, Spring Actuator, Springdoc OpenAPI 3.0.3, Hibernate Validator 9.1.0.Final, Spring Security, JJWT 0.12.6, Lombok, PostgreSQL, H2 (test), Flyway (core + postgresql)
 - **Auth**: Spring Security + JWT + bcrypt + refresh token implemented. `POST /api/v1/auth/register` (unique email validation), `POST /api/v1/auth/login`, `POST /api/v1/auth/refresh`. Users table with `ROLE_USER` default role. See `misc/docs/backend/auth-flow.md` for the full flow.
 - **Main class**: `br.com.jtech.tasklist.StartTasklist`
