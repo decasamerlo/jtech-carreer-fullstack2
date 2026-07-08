@@ -2,9 +2,6 @@
 
 ## Bugs
 
-### task-title-uniqueness-case-mismatch
-Frontend `tasks.ts` `validateTitle()` compares titles case-insensitively (`.toLowerCase()`). The backend (`existsByTasklistIdAndTitle`) and the DB (`V007` unique index on `title`) compare case-sensitively. A title the UI blocks as a duplicate ("Buy Milk" vs "buy milk") is not actually a duplicate as far as the API and database are concerned, and vice versa. Pick one semantic (recommend case-insensitive, since that matches user expectation) and apply it in the backend query (e.g. `LOWER(title)`) and the unique index, not just the frontend.
-
 ### register-flow-bypasses-usecase-layer
 `AuthController.register()` calls `registerUserInputGateway.register(user)` and then *directly* calls `tokenOutputGateway.generateAccessToken()` and `refreshTokenOutputGateway.createRefreshToken()` from the controller. `LoginUseCase` and `RefreshUseCase`, by contrast, own their token issuance internally and return a result record — controllers just call one input port. This is an inconsistent application of the hexagonal boundary the rest of the codebase (and `AGENTS.md`) is careful about, and it means `RegisterUserUseCase` can't be unit-tested for "does registration return usable tokens" the way login can. Move token issuance into `RegisterUserUseCase` (or a new use case) so the controller only depends on input ports, matching login/refresh.
 
@@ -88,3 +85,4 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - soft-delete-tasklist-cascade
 - tasklist-name-not-unique-in-api-mode
 - register-email-race-condition
+- task-title-uniqueness-case-mismatch

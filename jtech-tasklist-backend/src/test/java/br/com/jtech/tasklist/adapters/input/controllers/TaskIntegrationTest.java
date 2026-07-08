@@ -260,4 +260,53 @@ class TaskIntegrationTest {
         HttpResponse<String> response = send("DELETE", "/api/v1/tasks/" + taskId, null, user1Token);
         assertThat(response.statusCode()).isEqualTo(400);
     }
+
+    @Test
+    void create_ShouldReturn400_WhenDuplicateTitleExactCase() throws Exception {
+        createTask("Buy Milk", user1TasklistId, user1Token);
+
+        String body = objectMapper.writeValueAsString(Map.of("title", "Buy Milk"));
+        HttpResponse<String> response = send("POST", "/api/v1/tasks?tasklistId=" + user1TasklistId, body, user1Token);
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void create_ShouldReturn400_WhenDuplicateTitleDifferentCase() throws Exception {
+        createTask("Buy Milk", user1TasklistId, user1Token);
+
+        String body = objectMapper.writeValueAsString(Map.of("title", "buy milk"));
+        HttpResponse<String> response = send("POST", "/api/v1/tasks?tasklistId=" + user1TasklistId, body, user1Token);
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void update_ShouldReturn400_WhenDuplicateTitleDifferentCase() throws Exception {
+        createTask("Buy Milk", user1TasklistId, user1Token);
+        String otherId = createTask("Walk Dog", user1TasklistId, user1Token);
+
+        String body = objectMapper.writeValueAsString(Map.of("title", "buy milk"));
+        HttpResponse<String> response = send("PUT", "/api/v1/tasks/" + otherId, body, user1Token);
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void create_ShouldSucceed_WhenSameTitleInDifferentTasklist() throws Exception {
+        createTask("Buy Milk", user1TasklistId, user1Token);
+
+        String otherListId = createTasklist("Other List", user1Token);
+        String body = objectMapper.writeValueAsString(Map.of("title", "Buy Milk"));
+        HttpResponse<String> response = send("POST", "/api/v1/tasks?tasklistId=" + otherListId, body, user1Token);
+        assertThat(response.statusCode()).isEqualTo(201);
+    }
+
+    @Test
+    void create_ShouldSucceed_WhenTitleReusedAfterSoftDelete() throws Exception {
+        String taskId = createTask("Buy Milk", user1TasklistId, user1Token);
+        send("DELETE", "/api/v1/tasks/" + taskId, null, user1Token);
+
+        String body = objectMapper.writeValueAsString(Map.of("title", "Buy Milk"));
+        HttpResponse<String> response = send("POST", "/api/v1/tasks?tasklistId=" + user1TasklistId, body, user1Token);
+        assertThat(response.statusCode()).isEqualTo(201);
+    }
 }
+
