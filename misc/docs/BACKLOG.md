@@ -10,9 +10,6 @@ No catch-all route exists in `router/index.ts` (no `path: '/:pathMatch(.*)*'`). 
 
 ## Quality
 
-### tests-frontend — partially done
-Solid coverage already exists across stores, services, most components, and the router guard. Remaining gaps: no `RegisterView.spec.ts` (LoginView has one; Register has equivalent validation/error-display complexity), no dedicated test for `TaskListSidebar.vue`'s own list-rendering logic (its dialogs are tested individually), and no test for `HomeView.vue`/`AboutView.vue`. Depends on: frontend-auth, frontend-lists-crud, frontend-tasks-crud, vuetify.
-
 ### error-mapping
 Review and standardize error mapping across backend (exception handlers, HTTP status codes, error response DTOs) and frontend (API error interception, user-facing messages). Concrete finding: every "not found or access denied" case (task/tasklist not found, wrong owner) is thrown as `IllegalArgumentException` and mapped to `400 Bad Request` — semantically these are `404`/`403` situations, not malformed-request situations. The integration tests already hedge on this (`isGreaterThanOrEqualTo(400).isLessThan(500)` instead of asserting a specific code), which is itself a signal the convention was never nailed down. Recommend standardizing on `404` for both "doesn't exist" and "exists but isn't yours" (avoids leaking existence to unauthorized callers), reserving `400` for genuine validation failures. See also the security item on `debugMessage` leaking exception internals — same handler, different concern.
 
@@ -67,3 +64,4 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - vuetify
 - refactor-domain-mappers
 - tests-backend
+- tests-frontend

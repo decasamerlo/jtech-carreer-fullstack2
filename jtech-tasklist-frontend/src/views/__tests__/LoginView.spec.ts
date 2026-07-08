@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import { createVuetify } from 'vuetify'
+import { useAuthStore } from '@/stores/auth'
 import LoginView from '../LoginView.vue'
 
 const vuetify = createVuetify()
@@ -77,7 +78,7 @@ describe('LoginView', () => {
     await wrapper.find('input[type="password"]').setValue('secret')
     await wrapper.find('form').trigger('submit.prevent')
 
-    const auth = (await import('@/stores/auth')).useAuthStore()
+    const auth = useAuthStore()
     expect(auth.user?.email).toBe('john@example.com')
     expect(pushSpy).toHaveBeenCalledWith({ name: 'home' })
   })
@@ -94,7 +95,7 @@ describe('LoginView', () => {
         },
       ],
     })
-    const auth = (await import('@/stores/auth')).useAuthStore()
+    const auth = useAuthStore()
     vi.spyOn(auth, 'login').mockRejectedValue(new Error('Invalid credentials'))
 
     const wrapper = mount(LoginView, {
