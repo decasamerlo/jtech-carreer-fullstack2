@@ -43,94 +43,44 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="login-container">
-    <form class="login-form" @submit.prevent="handleSubmit">
-      <h1>Sign In</h1>
-
-      <p v-if="error" class="error-message">{{ error }}</p>
-
-      <div class="field">
-        <label for="email">Email</label>
-        <input id="email" v-model="email" type="email" placeholder="Enter your email" />
-        <p v-if="errors.email" class="field-error">{{ errors.email }}</p>
-      </div>
-
-      <div class="field">
-        <label for="password">Password</label>
-        <input id="password" v-model="password" type="password" placeholder="Enter your password" />
-        <p v-if="errors.password" class="field-error">{{ errors.password }}</p>
-      </div>
-
-      <button type="submit" :disabled="loading">
-        {{ loading ? 'Signing in...' : 'Sign In' }}
-      </button>
-
-      <p class="register-link">
-        Don't have an account?
-        <router-link :to="{ name: 'register' }">Register</router-link>
-      </p>
-    </form>
-  </div>
+  <v-container class="fill-height" fluid>
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="8" md="4">
+        <v-card>
+          <v-card-title class="text-center text-h5">Sign In</v-card-title>
+          <v-card-text>
+            <v-alert v-if="error" type="error" closable class="mb-4" @click:close="error = null">
+              {{ error }}
+            </v-alert>
+            <v-form @submit.prevent="handleSubmit">
+              <v-text-field
+                v-model="email"
+                label="Email"
+                type="email"
+                prepend-icon="mdi-email"
+                :error-messages="errors.email"
+                @input="errors.email = ''"
+              />
+              <v-text-field
+                v-model="password"
+                label="Password"
+                type="password"
+                prepend-icon="mdi-lock"
+                :error-messages="errors.password"
+                @input="errors.password = ''"
+              />
+              <v-btn type="submit" color="primary" block :loading="loading" class="mt-2">
+                {{ loading ? 'Signing in...' : 'Sign In' }}
+              </v-btn>
+            </v-form>
+            <v-divider class="my-4" />
+            <p class="text-center text-body-2">
+              Don't have an account?
+              <router-link :to="{ name: 'register' }">Register</router-link>
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
-
-<style scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  grid-column: 1 / -1;
-}
-
-.login-form {
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-}
-
-.login-form h1 {
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.field {
-  margin-bottom: 1rem;
-}
-
-.field label {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-weight: 600;
-}
-
-.field input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.field .error {
-  color: #e74c3c;
-  font-size: 0.85rem;
-  margin-top: 0.25rem;
-}
-
-button[type='submit'] {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: hsla(160, 100%, 37%, 1);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-button[type='submit']:hover {
-  background-color: hsla(160, 100%, 30%, 1);
-}
-</style>

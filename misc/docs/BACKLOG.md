@@ -2,9 +2,6 @@
 
 ## Features
 
-### vuetify
-Install Vuetify + `@mdi/font`. Migrate UI to Material Design. This is the one still-unmet item from `SPECIFICATION.md`'s mandatory stack table ("UI Framework: Material Design (Vuetify ou biblioteca equivalente)") — everything else on the required stack list is in place. Depends on: frontend-tasks-crud.
-
 ### frontend-error-handling
 Add toast/snackbar notifications for API errors in frontend. Handle HTTP error responses gracefully with user-facing messages (e.g., network errors, 4xx/5xx). Concrete gap found in review: when the axios refresh-token interceptor (`services/api.ts`) fails to refresh and calls `auth.logout()`, nothing tells the user their session expired or redirects them — they sit on a page with a suddenly-unauthenticated store until their next navigation trips the router guard. Depends on: frontend-lists-backend-integration.
 
@@ -74,3 +71,4 @@ No CI/CD exists (no GitHub Actions or equivalent). At minimum, run `./gradlew te
 - jwt-secret-default-committed
 - actuator-fully-exposed
 - exception-handler-leaks-internal-messages
+- vuetify

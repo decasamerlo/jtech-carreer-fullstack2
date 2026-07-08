@@ -58,131 +58,59 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="register-container">
-    <form class="register-form" @submit.prevent="handleSubmit">
-      <h1>Create Account</h1>
-
-      <p v-if="error" class="error-message">{{ error }}</p>
-
-      <div class="field">
-        <label for="name">Name</label>
-        <input id="name" v-model="name" type="text" placeholder="Enter your name" />
-        <p v-if="errors.name" class="field-error">{{ errors.name }}</p>
-      </div>
-
-      <div class="field">
-        <label for="email">Email</label>
-        <input id="email" v-model="email" type="email" placeholder="Enter your email" />
-        <p v-if="errors.email" class="field-error">{{ errors.email }}</p>
-      </div>
-
-      <div class="field">
-        <label for="password">Password</label>
-        <input id="password" v-model="password" type="password" placeholder="Enter your password" />
-        <p v-if="errors.password" class="field-error">{{ errors.password }}</p>
-      </div>
-
-      <div class="field">
-        <label for="confirmPassword">Confirm Password</label>
-        <input
-          id="confirmPassword"
-          v-model="confirmPassword"
-          type="password"
-          placeholder="Confirm your password"
-        />
-        <p v-if="errors.confirmPassword" class="field-error">{{ errors.confirmPassword }}</p>
-      </div>
-
-      <button type="submit" :disabled="loading">
-        {{ loading ? 'Creating account...' : 'Create Account' }}
-      </button>
-
-      <p class="login-link">
-        Already have an account?
-        <router-link :to="{ name: 'login' }">Sign In</router-link>
-      </p>
-    </form>
-  </div>
+  <v-container class="fill-height" fluid>
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="8" md="4">
+        <v-card>
+          <v-card-title class="text-center text-h5">Create Account</v-card-title>
+          <v-card-text>
+            <v-alert v-if="error" type="error" closable class="mb-4" @click:close="error = null">
+              {{ error }}
+            </v-alert>
+            <v-form @submit.prevent="handleSubmit">
+              <v-text-field
+                v-model="name"
+                label="Name"
+                prepend-icon="mdi-account"
+                :error-messages="errors.name"
+                @input="errors.name = ''"
+              />
+              <v-text-field
+                v-model="email"
+                label="Email"
+                type="email"
+                prepend-icon="mdi-email"
+                :error-messages="errors.email"
+                @input="errors.email = ''"
+              />
+              <v-text-field
+                v-model="password"
+                label="Password"
+                type="password"
+                prepend-icon="mdi-lock"
+                :error-messages="errors.password"
+                @input="errors.password = ''"
+              />
+              <v-text-field
+                v-model="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                prepend-icon="mdi-lock-check"
+                :error-messages="errors.confirmPassword"
+                @input="errors.confirmPassword = ''"
+              />
+              <v-btn type="submit" color="primary" block :loading="loading" class="mt-2">
+                {{ loading ? 'Creating account...' : 'Create Account' }}
+              </v-btn>
+            </v-form>
+            <v-divider class="my-4" />
+            <p class="text-center text-body-2">
+              Already have an account?
+              <router-link :to="{ name: 'login' }">Sign In</router-link>
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
-
-<style scoped>
-.register-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  grid-column: 1 / -1;
-}
-
-.register-form {
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-}
-
-.register-form h1 {
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.error-message {
-  color: #e74c3c;
-  text-align: center;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  background: #fdf0ef;
-  border-radius: 4px;
-}
-
-.field {
-  margin-bottom: 1rem;
-}
-
-.field label {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-weight: 600;
-}
-
-.field input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.field-error {
-  color: #e74c3c;
-  font-size: 0.85rem;
-  margin-top: 0.25rem;
-}
-
-button[type='submit'] {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: hsla(160, 100%, 37%, 1);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-button[type='submit']:hover {
-  background-color: hsla(160, 100%, 30%, 1);
-}
-
-button[type='submit']:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.login-link {
-  text-align: center;
-  margin-top: 1rem;
-  font-size: 0.9rem;
-}
-</style>

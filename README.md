@@ -37,6 +37,9 @@ Sistema TODO List multi-usuário com arquitetura hexagonal no backend e componen
 | **Vue Router** | 5.1.0 | Roteamento SPA com lazy-loading e guards de navegação |
 | **Pinia** | 3.0.4 | Gerenciamento de estado com suporte a DevTools e extensões |
 | **pinia-plugin-persistedstate** | 4.7.1 | Persistência automática de stores no localStorage/sessionStorage |
+| **Vuetify** | 4.1.x | Material Design 3 component framework |
+| **@mdi/font** | — | Material Design Icons |
+| **vite-plugin-vuetify** | — | Vite plugin para auto-import de componentes/directives |
 | **Vitest** | 4.1.9 | Testes unitários compatíveis com ecossistema Vite |
 | **ESLint** | 10.6.0 | Análise estática com regras específicas para Vue e TypeScript |
 | **Prettier** | 3.9.4 | Formatação consistente sem debates de estilo |
